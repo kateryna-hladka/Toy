@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model Dictionary<string, object>;
+<div class="d-flex">
+    <div class="category pe-3">
+        @if (@Model["Category"] != null)
+        {
+            @foreach (var category in (@Model["Category"] as List<Category>))
+            {
+                <div><a href="#">@category.Name</a></div>
+            }
+        }
+    </div>
+    @* <div class="popular_toy flex-grow-1">
+        <div class="mt-2 mb-2">Купуй популярні іграшки в 1 клік</div>
+        <div class="ps-md-3 pe-md-3 ps-2 pe-2">
+            <div class="arrow-left"></div>
+            <div class="first-toy"></div>
+            <span>Суперреалістичні автівки для хлопців та дівчат</span>
+            <div class="second-toy"></div>
+            <div class="arrow-right"></div>
+        </div>
+    </div>
+</div>
+ <div class="brand flex-grow-1">
+    <div class="mt-2 mb-2">Бренди</div>
+    <div class="ps-md-3 pe-md-3 ps-2 pe-2">
+        <div class="arrow-left"></div>
+        <div class="d-flex align-items-center">
+            @if (@Model["Photo_Brand"] != null)
+            {
+                @foreach (var brand in (@Model["Photo_Brand"] as IEnumerable<Tuple<Photo, Brand>>))
+                {
+                    <a href="#"><img src="~/img/@brand.Item1.PhotoUrl" alt="@brand.Item2.Name"/></a>
+                }
+            }
+        </div>
+        <div class="arrow-right"></div>
+    </div>
+</div> 
+<div class="d-flex">
+    <div class="card" style="width: 18rem; align-items: center">
+        <img src="~/img/product/Barbie in pink dress.png" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+    </div>
+</div>*@

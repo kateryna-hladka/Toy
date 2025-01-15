@@ -1,0 +1,11 @@
+﻿* {
+    --light-violet: #C195DB;
+    --dark-violet: #972BD9;
+    --black: #000000;
+    --black-light-opacity: rgba(0,0,0, 0.05);
+    --black-medium-opacity: rgba(0,0,0, 0.5);
+    --black-large-opacity: rgba(0,0,0, 0.6);
+    --black-dark-opacity: rgba(0,0,0, 0.8);
+    --green: #0A8416;
+    --blue: #2B31D9;
+}

@@ -1,0 +1,162 @@
+﻿@import "variables.css";
+
+@font-face {
+    font-family: Inter;
+    src: local('Inter'), local('Inter-VariableFont'), url('../fonts/Inter/Inter-VariableFont_opsz,wght.ttf');
+    font-style: normal;
+}
+
+*, ul, li {
+    font-family: Inter;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+
+    header img[alt="Dash"] {
+        display: none;
+    }
+
+    .category {
+        display: inline-block !important;
+        border-right: 1px solid var(--black-light-opacity);
+    }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+}
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--light-violet);
+}
+
+header form button {
+    text-align: center;
+    border: none;
+    border-radius: 0 10px 10px 0;
+    background-color: var(--dark-violet);
+    color: white;
+}
+
+header ul li:first-child {
+    flex-basis: 450px;
+}
+
+header img, footer img {
+    width: auto;
+    height: auto;
+}
+
+ul li {
+    list-style-type: none;
+}
+
+footer {
+    background-color: var(--light-violet);
+    font-size: 0.8rem;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+.brand {
+    width: 5%;
+    height: 5%;
+    background: no-repeat;
+    background-image: url("/img/babyborn.png");
+}
+.phone_me {
+    width: 55px;
+    height: 55px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    position: fixed;
+    top: 45%;
+    right: 0;
+    background-image: url("/img/sign/phone me.png")
+}
+.popular_toy > div {
+    margin: auto;
+}
+.popular_toy > div:first-of-type{
+    width: 70%;
+}
+.popular_toy > div:last-of-type {
+    width: 70%;
+    height: 90%;
+    border: 1px solid var(--black-light-opacity);
+    border-radius: 2%;
+    position: relative;
+    font-size: 0.9rem;
+    text-align: center;
+}
+.popular_toy > div:last-of-type > span {
+    position: absolute;
+    bottom: 2%;
+    right:30%;
+}
+.arrow-left, .arrow-right {
+    width: 25px;
+    height: 25px;
+    position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    position: absolute;
+    top: calc(50% - 25px/2);
+}
+.arrow-left {
+    transform: rotate(180deg);
+    background-image: url("../img/sign/arrow black.png");
+}
+.arrow-right{
+    right: 2%;
+    background-image: url("../img/sign/arrow pink.png")
+}
+@media (max-width: 768px) {
+    header img:not([alt="Dash"]) {
+        width: 80%;
+        height: 80%;
+    }
+
+    header img[alt="Logo"] {
+        width: 60%;
+        height: 60%;
+    }
+
+    header button {
+        border-radius: 0 2px 2px 0;
+    }
+
+    header ul li:first-child {
+        flex-basis: 250px;
+    }
+    .category{
+        display: none;
+    }
+}

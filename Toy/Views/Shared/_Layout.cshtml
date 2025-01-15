@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Toy</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Toy.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <div class="d-flex align-items-center justify-content-between ms-md-5 me-md-5 ms-1 me-1">
+            <div>
+                <a asp-controller="Home" asp-action="Index"><img src="~/img/header/dash.png" alt="Dash" /></a>
+                <a asp-controller="Home" asp-action="Index"><img src="~/img/header/logo.png" alt="Logo" /></a>
+            </div>
+            <ul class="d-flex align-items-center flex-grow-1 justify-content-end">
+                <li class="me-md-5 me-2 me-sm-3">
+                    <form class="input-group">
+                        <input type="text" class="form-control" placeholder="Що ви шукаєте?">
+                        <button type="button" class="ps-md-3 pe-md-3 ps-2 pe-2">Пошук</button>
+                    </form>
+                </li>
+                <li>
+                    <a asp-controller="Home" asp-action="Privacy"><img src="~/img/header/basket.png" alt="Basket icon" /></a>
+                </li>
+                <li class="ms-md-3">
+                    <a asp-controller="Home" asp-action="Privacy"><img src="~/img/header/user.png" alt="User icon" /></a>
+                </li>
+            </ul>
+        </div>
+    </header>
+    <div>
+        <main role="main" class="p-4 pt-1">
+            <div class="phone_me">
+            </div>
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="d-flex justify-content-between align-items-center">
+        <div class="pt-2 pb-2 ps-2">
+            <ul>
+                <li>
+                    <img src="~/img/footer/phone.png" alt="phone" />
+                    +380-000-00-00
+                </li>
+                <li>
+                    <img src="~/img/footer/email.png" alt="email" />
+                    yaihrashka@email.com
+                </li>
+                <li>
+                    <img src="~/img/footer/address.png" alt="address" />
+                    м.Київ вул.Десята 22
+                </li>
+            </ul>
+        </div>
+        <div class="flex-md-grow-1 pe-2">
+            <ul class="d-md-flex justify-content-evenly">
+                <li><a asp-controller="Home" asp-action="Privacy">Оплата і доставка</a></li>
+                <li><a asp-controller="Home" asp-action="Privacy">Обмін та повернення</a></li>
+                <li><a asp-controller="Home" asp-action="Privacy">Про нас</a></li>
+                <li><a asp-controller="Home" asp-action="Privacy">Політика безпеки</a></li>
+                <li><a asp-controller="Home" asp-action="Privacy">Наші контакти</a></li>
+            </ul>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
