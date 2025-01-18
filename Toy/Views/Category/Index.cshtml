@@ -1,0 +1,61 @@
+﻿@using Toy.Utilit
+@model dynamic
+@{
+    string defaultPicture = "sign/Image-not-found.png";
+    int[] newProduct = NewProducts.GetProducts();
+}
+@* @await Html.PartialAsync("_CardProduct", new[]{Model}); *@
+<div class="d-flex flex-wrap card-product">
+    @foreach (var product in (Model as IEnumerable<dynamic>))
+    {
+        bool hasDiscount = product.Discount != null;
+        bool hasProduct = product.product.Amount > 0;
+
+        <div class="card me-1 mb-md-4 mb-2 @(!hasProduct ? "product-not-available" : "")" style="width: 18rem;">
+            @if (hasDiscount && hasProduct)
+            {
+                <div class="sign-discount"></div>
+            }
+            else if (Array.Exists(newProduct, p => p == product.product.Id) && hasProduct)
+            {
+                <div class="sign-new"></div>
+            } 
+            <span class="image-block">
+                <img src="~/img/@if(product.PhotoUrl!=null){@product.PhotoUrl}else{@defaultPicture}"
+                     class="card-img-top" alt="@product.product.Name">
+            </span>
+            <div class="card-body">
+                <div>
+                    <span>
+                        @for (int i = 0; i < Rating.MaxStars; i++)
+                        {
+                            <svg width="15" height="15" xmlns="http://www.w3.org/2000/svg" class="star-svg @(product.MarkAvg > 0 && i+1<= product.MarkAvg ? "has-color" : "no-color")">
+                                <polygon points="7.5,0 9.4,5.2 14.7,5.2 10.8,8.3 12.3,13.6 7.5,10.8 2.7,13.6 4.2,8.3 0.3,5.2 5.6,5.2" />
+                            </svg>
+                        }
+                    </span>
+                    <div class="flex-grow-1">@Rating.RoundCommentCount(@product.CommentCount) @Rating.TextFormReview(@product.CommentCount)</div>
+                </div>
+                <h5 class="card-title @(hasProduct ? "mb-4" : "")">@product.product.Name @product.MarkAvg</h5>
+                @if (!hasProduct)
+                {
+                    <span class="mb-4">Немає в наявності</span>
+                }
+                
+                <div class="price">
+                    <span class="@(hasDiscount && hasProduct ? "decoration" : "")">@product.product.Price.ToString("0.##") @product.UnitPriceName</span>
+                    @if (hasDiscount && hasProduct)
+                    {
+                        <span>@Calc.GetPriceWithDiscount(product.product.Price, product.Discount, product.UnitDiscountName).ToString("0.##") @product.UnitPriceName</span>
+                    }
+                    @if (hasProduct)
+                    {
+                        <div class="basket"></div>
+                    }
+                </div>
+                @* <a href="#" class="btn btn-primary">Go somewhere</a> *@
+            </div>
+        </div>
+    }
+</div>
+

@@ -74,9 +74,16 @@ ul li {
     list-style-type: none;
 }
 
+footer, .card-product h5, .decoration {
+    font-size: 0.9rem;
+}
+
+.card-product div {
+    font-size: 0.8rem;
+}
+
 footer {
     background-color: var(--light-violet);
-    font-size: 0.8rem;
 }
 
 a {
@@ -90,6 +97,7 @@ a {
     background: no-repeat;
     background-image: url("/img/babyborn.png");
 }
+
 .phone_me {
     width: 55px;
     height: 55px;
@@ -99,14 +107,18 @@ a {
     position: fixed;
     top: 45%;
     right: 0;
-    background-image: url("/img/sign/phone me.png")
+    background-image: url("/img/sign/phone me.png");
+    z-index: 1;
 }
+
 .popular_toy > div {
     margin: auto;
 }
-.popular_toy > div:first-of-type{
+
+.popular_toy > div:first-of-type {
     width: 70%;
 }
+
 .popular_toy > div:last-of-type {
     width: 70%;
     height: 90%;
@@ -116,11 +128,13 @@ a {
     font-size: 0.9rem;
     text-align: center;
 }
+
 .popular_toy > div:last-of-type > span {
     position: absolute;
     bottom: 2%;
-    right:30%;
+    right: 30%;
 }
+
 .arrow-left, .arrow-right {
     width: 25px;
     height: 25px;
@@ -130,14 +144,116 @@ a {
     position: absolute;
     top: calc(50% - 25px/2);
 }
+
 .arrow-left {
     transform: rotate(180deg);
     background-image: url("../img/sign/arrow black.png");
 }
-.arrow-right{
+
+.arrow-right {
     right: 2%;
     background-image: url("../img/sign/arrow pink.png")
 }
+
+.decoration {
+    color: var(--black-large-opacity)
+}
+
+.card-product h5 {
+    color: var(--black-dark-opacity);
+}
+
+span.product-not-available {
+    display: inline-block;
+    font-weight: bold;
+}
+
+.image-block {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+    margin: auto;
+}
+.image-block img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.card-body > div:first-of-type > div:last-of-type {
+    float: right
+}
+
+div.price {
+    margin-bottom: 0;
+    position: absolute;
+    bottom: 0;
+    width: 90%;
+}
+
+span > .star-svg:not(:first-child) {
+    margin-left: -2%;
+}
+
+.has-color polygon {
+    fill: var(--orange);
+}
+
+.no-color polygon {
+    fill: var(--gray)
+}
+
+.decoration {
+    text-decoration: line-through;
+}
+
+.price > span:last-of-type {
+    font-size: 1.2rem;
+    color: var(--black);
+}
+
+.sign-discount, .sign-new {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    z-index: 1;
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+.sign-discount {
+    background-image: url("../img/sign/discount.png");
+}
+
+.sign-new {
+    background-image: url("../img/sign/new sign.png");
+}
+
+.product-not-available{
+    opacity: 50%;
+    
+}
+.card-title+span {
+    color: var(--orange)
+}
+.card:hover {
+    border: 1px solid var(--dark-violet);
+    cursor: pointer;
+    transition-duration: 0.4s;
+    transform: scaleY(1.01);
+}
+
+.card .basket {
+    display: inline-block;
+    position: absolute;
+    right: 0;
+    width: 25px;
+    height: 25px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url("../img/sign/basket black.png")
+}
+
 @media (max-width: 768px) {
     header img:not([alt="Dash"]) {
         width: 80%;
@@ -156,7 +272,10 @@ a {
     header ul li:first-child {
         flex-basis: 250px;
     }
-    .category{
+
+    .category {
         display: none;
     }
+
+
 }

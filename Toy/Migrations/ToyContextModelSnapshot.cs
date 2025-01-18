@@ -440,6 +440,12 @@ namespace Toy.Migrations
                         .HasColumnType("money")
                         .HasColumnName("price");
 
+                    b.Property<int?>("PriceUnitId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(6)
+                        .HasColumnName("price_unit_id");
+
                     b.Property<string>("Sex")
                         .HasMaxLength(1)
                         .IsUnicode(false)
@@ -475,6 +481,8 @@ namespace Toy.Migrations
                     b.HasIndex("MaterialId");
 
                     b.HasIndex("PackagingId");
+
+                    b.HasIndex("PriceUnitId");
 
                     b.HasIndex("SizeUnitId");
 
@@ -612,19 +620,9 @@ namespace Toy.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("Amount")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("PurchaceId")
                         .HasColumnType("int")
-                        .HasDefaultValue(1)
-                        .HasColumnName("amount");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("money")
-                        .HasColumnName("price");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int")
-                        .HasColumnName("product_id");
+                        .HasColumnName("purchase_id");
 
                     b.Property<int>("PurchaseHistoryId")
                         .HasColumnType("int")
@@ -632,8 +630,6 @@ namespace Toy.Migrations
 
                     b.HasKey("Id")
                         .HasName("PK__Purchase__3213E83FC92FBBB7");
-
-                    b.HasIndex("ProductId");
 
                     b.HasIndex("PurchaseHistoryId");
 
@@ -916,6 +912,11 @@ namespace Toy.Migrations
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK__Product__packagi__628FA481");
 
+                    b.HasOne("Toy.Models.Unit", "PriceUnit")
+                        .WithMany("ProductPriceUnits")
+                        .HasForeignKey("PriceUnitId")
+                        .HasConstraintName("FK__Product__price_u__4E53A1AA");
+
                     b.HasOne("Toy.Models.Unit", "SizeUnit")
                         .WithMany("ProductSizeUnits")
                         .HasForeignKey("SizeUnitId")
@@ -935,6 +936,8 @@ namespace Toy.Migrations
                     b.Navigation("Material");
 
                     b.Navigation("Packaging");
+
+                    b.Navigation("PriceUnit");
 
                     b.Navigation("SizeUnit");
 
@@ -1003,19 +1006,11 @@ namespace Toy.Migrations
 
             modelBuilder.Entity("Toy.Models.PurchaseHistoryProduct", b =>
                 {
-                    b.HasOne("Toy.Models.Product", "Product")
-                        .WithMany("PurchaseHistoryProducts")
-                        .HasForeignKey("ProductId")
-                        .IsRequired()
-                        .HasConstraintName("FK__Purchase___produ__3F115E1A");
-
                     b.HasOne("Toy.Models.PurchaseHistory", "PurchaseHistory")
                         .WithMany("PurchaseHistoryProducts")
                         .HasForeignKey("PurchaseHistoryId")
                         .IsRequired()
                         .HasConstraintName("FK__Purchase___purch__40058253");
-
-                    b.Navigation("Product");
 
                     b.Navigation("PurchaseHistory");
                 });
@@ -1095,8 +1090,6 @@ namespace Toy.Migrations
 
                     b.Navigation("PurchaseHistories");
 
-                    b.Navigation("PurchaseHistoryProducts");
-
                     b.Navigation("Reviews");
                 });
 
@@ -1120,6 +1113,8 @@ namespace Toy.Migrations
                     b.Navigation("Discounts");
 
                     b.Navigation("Packagings");
+
+                    b.Navigation("ProductPriceUnits");
 
                     b.Navigation("ProductSizeUnits");
 

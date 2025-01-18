@@ -16,4 +16,5 @@ public partial class Unit
     public virtual ICollection<Product> ProductSizeUnits { get; set; } = new List<Product>();
 
     public virtual ICollection<Product> ProductWeightUnits { get; set; } = new List<Product>();
+    public virtual ICollection<Product> ProductPriceUnits { get; set; } = new List<Product>();
 }

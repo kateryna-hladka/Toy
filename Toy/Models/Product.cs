@@ -39,6 +39,8 @@ public partial class Product
 
     public int? SizeUnitId { get; set; }
 
+    public int? PriceUnitId { get; set; }
+
     public virtual ICollection<Basket> Baskets { get; set; } = new List<Basket>();
 
     public virtual Brand? Brand { get; set; }
@@ -57,11 +59,10 @@ public partial class Product
 
     public virtual ICollection<PurchaseHistory> PurchaseHistories { get; set; } = new List<PurchaseHistory>();
 
-    public virtual ICollection<PurchaseHistoryProduct> PurchaseHistoryProducts { get; set; } = new List<PurchaseHistoryProduct>();
-
     public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
 
     public virtual Unit? SizeUnit { get; set; }
 
     public virtual Unit? WeightUnit { get; set; }
+    public virtual Unit? PriceUnit { get; set; }
 }

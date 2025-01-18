@@ -342,6 +342,8 @@ public partial class ToyContext : DbContext
                 .HasColumnType("decimal(5, 2)")
                 .HasColumnName("weight");
             entity.Property(e => e.WeightUnitId).HasColumnName("weight_unit_id");
+            entity.Property(e => e.PriceUnitId).HasColumnName("price_unit_id")
+                .HasDefaultValue(6);
 
             entity.HasOne(d => d.Brand).WithMany(p => p.Products)
                 .HasForeignKey(d => d.BrandId)
@@ -375,6 +377,10 @@ public partial class ToyContext : DbContext
             entity.HasOne(d => d.WeightUnit).WithMany(p => p.ProductWeightUnits)
                 .HasForeignKey(d => d.WeightUnitId)
                 .HasConstraintName("FK__Product__weight___6477ECF3");
+
+            entity.HasOne(d => d.PriceUnit).WithMany(p => p.ProductPriceUnits)
+                .HasForeignKey(d => d.PriceUnitId)
+                .HasConstraintName("FK__Product__price_u__4E53A1AA");
         });
 
         modelBuilder.Entity<ProductDiscount>(entity =>
@@ -466,20 +472,8 @@ public partial class ToyContext : DbContext
             entity.ToTable("Purchase_History_Product");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Amount)
-                .HasDefaultValue(1)
-                .HasColumnName("amount");
-            entity.Property(e => e.Price)
-                .HasColumnType("money")
-                .HasColumnName("price");
-            entity.Property(e => e.ProductId).HasColumnName("product_id");
             entity.Property(e => e.PurchaseHistoryId).HasColumnName("purchase_history_id");
-
-            entity.HasOne(d => d.Product).WithMany(p => p.PurchaseHistoryProducts)
-                .HasForeignKey(d => d.ProductId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Purchase___produ__3F115E1A");
-
+            entity.Property(e => e.PurchaceId).HasColumnName("purchase_id");
             entity.HasOne(d => d.PurchaseHistory).WithMany(p => p.PurchaseHistoryProducts)
                 .HasForeignKey(d => d.PurchaseHistoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
