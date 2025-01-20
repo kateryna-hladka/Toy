@@ -1,7 +1,6 @@
 ﻿@using Toy.Utilit
 @model dynamic
 @{
-    string defaultPicture = "sign/Image-not-found.png";
     int[] newProduct = NewProducts.GetProducts();
 }
 @* @await Html.PartialAsync("_CardProduct", new[]{Model}); *@
@@ -21,20 +20,14 @@
                 <div class="sign-new"></div>
             } 
             <span class="image-block">
-                <img src="~/img/@if(product.PhotoUrl!=null){@product.PhotoUrl}else{@defaultPicture}"
+                <a asp-controller="Product" asp-action="Index" asp-route-id="@product.product.Id">
+                <img src="~/img/@if(product.PhotoUrl!=null){@product.PhotoUrl}else{@StaticVariables.defaultPicture}"
                      class="card-img-top" alt="@product.product.Name">
+                </a>
             </span>
             <div class="card-body">
                 <div>
-                    <span>
-                        @for (int i = 0; i < Rating.MaxStars; i++)
-                        {
-                            <svg width="15" height="15" xmlns="http://www.w3.org/2000/svg" class="star-svg @(product.MarkAvg > 0 && i+1<= product.MarkAvg ? "has-color" : "no-color")">
-                                <polygon points="7.5,0 9.4,5.2 14.7,5.2 10.8,8.3 12.3,13.6 7.5,10.8 2.7,13.6 4.2,8.3 0.3,5.2 5.6,5.2" />
-                            </svg>
-                        }
-                    </span>
-                    <div class="flex-grow-1">@Rating.RoundCommentCount(@product.CommentCount) @Rating.TextFormReview(@product.CommentCount)</div>
+                    @await Html.PartialAsync("_Rating", new object[3] { product.MarkAvg, product.CommentCount, product.product.Id})
                 </div>
                 <h5 class="card-title @(hasProduct ? "mb-4" : "")">@product.product.Name @product.MarkAvg</h5>
                 @if (!hasProduct)
@@ -44,15 +37,15 @@
                 
                 <div class="price">
                     <span class="@(hasDiscount && hasProduct ? "decoration" : "")">@product.product.Price.ToString("0.##") @product.UnitPriceName</span>
-                    @if (hasDiscount && hasProduct)
-                    {
-                        <span>@Calc.GetPriceWithDiscount(product.product.Price, product.Discount, product.UnitDiscountName).ToString("0.##") @product.UnitPriceName</span>
-                    }
+                    @await Html.PartialAsync("_Price", new object[6] { hasDiscount, hasProduct, product.product.Price, product.UnitPriceName, product.Discount, product.UnitDiscountName })
                     @if (hasProduct)
                     {
-                        <div class="basket"></div>
+                        <a asp-controller="Basket" asp-action="Index" asp-route-id="@product.product.Id">
+                            <span class="basket"></span>
+                        </a>
                     }
                 </div>
+                
                 @* <a href="#" class="btn btn-primary">Go somewhere</a> *@
             </div>
         </div>

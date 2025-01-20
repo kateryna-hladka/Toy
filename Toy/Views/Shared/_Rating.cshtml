@@ -1,0 +1,27 @@
+﻿@using Toy.Utilit
+@model object[]
+@{
+    double? MarkAvg = Model[0] as double?;
+    int CommentCount = Convert.ToInt32(Model[1]);
+    int productId = Convert.ToInt32(Model[2]);
+}
+<span>
+    @for (int i = 0; i < Rating.MaxStars; i++)
+    {
+        <svg width="15" height="15" xmlns="http://www.w3.org/2000/svg" class="star-svg @(MarkAvg > 0 && i+1<= MarkAvg ? "has-color" : "no-color")">
+            <polygon points="7.5,0 9.4,5.2 14.7,5.2 10.8,8.3 12.3,13.6 7.5,10.8 2.7,13.6 4.2,8.3 0.3,5.2 5.6,5.2" />
+        </svg>
+    }
+</span>
+<div class="flex-grow-1">
+    @if (CommentCount > 0)
+    {
+        <a asp-controller="Comment" asp-action="Index" asp-route-id="@productId">
+            @Rating.RoundCommentCount(CommentCount) @Transform.TextFormReview(CommentCount)
+        </a>
+    }
+    else
+    {
+        @Rating.RoundCommentCount(CommentCount) @Transform.TextFormReview(CommentCount)
+    }
+</div>

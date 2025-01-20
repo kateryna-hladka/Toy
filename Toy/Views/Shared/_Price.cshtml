@@ -1,0 +1,16 @@
+﻿@using Toy.Utilit
+@model object[]
+@{
+    bool hasDiscount = Convert.ToBoolean(Model[0]);
+    bool hasProduct = Convert.ToBoolean(Model[1]);
+    decimal price = Convert.ToDecimal(Model[2]);
+    string unitPriceName = Model[3].ToString();
+    decimal discount = Convert.ToDecimal(Model[4]);
+    string unitDiscountName = Convert.ToString(Model[5]);
+}
+
+@if (hasDiscount && hasProduct)
+{
+    <span>@Toy.Utilit.Discount.GetPriceWithDiscount(price, discount, unitDiscountName).ToString("0.##") @unitPriceName</span>
+}
+

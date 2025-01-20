@@ -1,6 +1,6 @@
 ﻿namespace Toy.Utilit
 {
-    public static class Calc
+    public static class Discount
     {
         public static decimal GetPriceWithDiscount(decimal price, decimal discount, string unit)
         {

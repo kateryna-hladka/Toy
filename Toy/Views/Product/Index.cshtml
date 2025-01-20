@@ -1,0 +1,137 @@
+﻿@using Toy.Utilit
+@model dynamic
+@{
+    bool isProduct = @Model.product.Amount > 0;
+    bool hasDiscrount = @Model.Discount != null;
+}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><img src="~/img/sign/home.png" alt="home sign"/></a></li>
+        @if (Model.product.Category?.Name != null)
+        {
+            <li class="breadcrumb-item"><a asp-controller="Category" asp-action="Index" asp-route-id="@Model.product.CategoryId">@Model.product.Category.Name</a></li>
+        }
+        <li class="breadcrumb-item">@Model.product.Name</li>
+    </ol>
+</nav>
+<div class="w-100 product-parent ">
+    <div class="product-img me-md-5 me-2 me-sm-3 float-start">
+        <img src="~/img/@if(@Model.PhotoUrl!=null){@Model.PhotoUrl}else{@StaticVariables.defaultPicture}"
+             class="card-img-top" alt="@Model.product.Name">
+    </div>
+    <div class="float-start">
+        <h2 class="product-name">@Model.product.Name</h2>
+        <div class="d-flex">
+            @await Html.PartialAsync("_Rating", new object[3] { @Model.MarkAvg, @Model.CommentCount, @Model.product.Id })
+        </div>
+
+        @if (isProduct)
+        {
+            <span class="is-product"> В наявності</span>
+        }
+        else
+        {
+            <span class="product-not-available">Немає в наявності</span>
+        }
+        <div>
+            @if (!isProduct || !hasDiscrount)
+            {
+                <span>@Model.product.Price.ToString("0.##") @Model.UnitPriceName</span>
+            }
+            @await Html.PartialAsync("_Price", new object[6] { hasDiscrount, isProduct, @Model.product.Price, @Model.UnitPriceName, @Model.Discount, @Model.UnitDiscountName })
+        </div>
+        <div class="add-basket mt-2">
+            <span class="choose-amount">
+                <span class="delete-product">-</span>
+                <span><output minValue="1" maxValue="@Model.product.Amount">1</output></span>
+                <span class="add-product">+</span>
+            </span>
+            <button class="ms-2 ms-sm-3" type="submit">До кошика</button>
+        </div>
+        <div class="mt-2 mb-2">
+            Основні характеристики:
+            <table class="product-characteristic">
+                <tr>
+                    <td>Вік дитини</td>
+                    <td>
+                        Від @Model.product.AgeFrom @(Model.product.AgeTo != null ? $" до {Model.product.AgeTo} {Transform.TextFormAge(Model.product.AgeTo)}" : Transform.TextFormAge(Model.product.AgeFrom))
+                    </td>
+
+                </tr>
+                @if (Model.product.Brand?.Name != null)
+                {
+                    <tr>
+                        <td>Виробник</td>
+                        <td>@Model.product.Brand.Name</td>
+                    </tr>
+                }
+                @if (Model.product.CountryProducer?.Name != null)
+                {
+                    <tr>
+                        <td>Країна виробник</td>
+                        <td>@Model.product.CountryProducer.Name</td>
+                    </tr>
+                }
+                @if (Model.product.Material?.Name != null)
+                {
+                    <tr>
+                        <td>Матеріал</td>
+                        <td>@Model.product.Material.Name</td>
+                    </tr>
+                }
+                @if (Model.product.Packaging?.Name != null)
+                {
+                    <tr>
+                        <td>Пакування</td>
+                        <td>@Model.product.Packaging.Name</td>
+                    </tr>
+                }
+                @if (Model.product.Sex != null)
+                {
+                    <tr>
+                        <td>Стать</td>
+                        <td>@Transform.TextFormSex(Model.product.Sex)</td>
+                    </tr>
+                }
+                @if (Model.product.Category?.Name != null)
+                {
+                    <tr>
+                        <td>Тип товару</td>
+                        <td>@Model.product.Category.Name</td>
+                    </tr>
+                }
+                @if (Model.UnitWeightName != null)
+                {
+                    <tr>
+                        <td>Вага іграшки</td>
+                        <td>@Model.product.Weight @Model.UnitWeightName</td>
+                    </tr>
+                }
+                @if (Model.product.Size != null)
+                {
+                    <tr>
+                        <td>Розмір іграшки</td>
+                        <td>@Model.product.Size @Model.UnitSizeName</td>
+                    </tr>
+                }
+                @if (Model.product.Packaging?.Length != null && Model.product.Packaging?.Width != null
+                && Model.product.Packaging?.Hight != null)
+                {
+                    <tr>
+                        <td>Розмір пакування</td>
+                        <td>
+                            @Model.product.Packaging.Length.ToString("0.#")-@Model.product.Packaging.Width.ToString("0.#")-@Model.product.Packaging.Hight.ToString("0.#")@Model.UnitSizeName
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+        @if (Model.product.Description != null)
+        {
+            <span>Опис:</span>
+            <div class="product-description flex-wrap mb-2">@Model.product.Description</div>
+        }
+    </div>
+</div>
+
+
