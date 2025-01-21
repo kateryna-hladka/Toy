@@ -2,15 +2,20 @@
 @model dynamic
 @{
     int[] newProduct = NewProducts.GetProducts();
+    IEnumerable<dynamic> ModelCollection = Model as IEnumerable<dynamic>;
 }
 @* @await Html.PartialAsync("_CardProduct", new[]{Model}); *@
-<div class="d-flex flex-wrap card-product">
-    @foreach (var product in (Model as IEnumerable<dynamic>))
+@if (ModelCollection.Any())
+{
+    @await Html.PartialAsync("_BreadCrumb", new object[] { ModelCollection.First().product.Category.Name})
+    <h3>@ModelCollection.First().product.Category.Name</h3>
+}
+<div class="d-flex flex-wrap justify-content-center justify-content-lg-start card-product">
+    @foreach (var product in (ModelCollection))
     {
         bool hasDiscount = product.Discount != null;
         bool hasProduct = product.product.Amount > 0;
-
-        <div class="card me-1 mb-md-4 mb-2 @(!hasProduct ? "product-not-available" : "")" style="width: 18rem;">
+        <div class="card ms-1 mb-md-4 mb-2 @(!hasProduct ? "product-not-available" : "")">
             @if (hasDiscount && hasProduct)
             {
                 <div class="sign-discount"></div>
@@ -21,18 +26,18 @@
             } 
             <span class="image-block">
                 <a asp-controller="Product" asp-action="Index" asp-route-id="@product.product.Id">
-                <img src="~/img/@if(product.PhotoUrl!=null){@product.PhotoUrl}else{@StaticVariables.defaultPicture}"
-                     class="card-img-top" alt="@product.product.Name">
+                <img src="~/img/@(product.PhotoUrl ?? StaticVariables.defaultPicture)"
+                        class="card-img-top" alt="@product.product.Name">
                 </a>
             </span>
-            <div class="card-body">
+            <div class="card-body d-grid pb-0">
                 <div>
                     @await Html.PartialAsync("_Rating", new object[3] { product.MarkAvg, product.CommentCount, product.product.Id})
                 </div>
-                <h5 class="card-title @(hasProduct ? "mb-4" : "")">@product.product.Name @product.MarkAvg</h5>
+                <h5 class="card-title">@product.product.Name @product.MarkAvg</h5>
                 @if (!hasProduct)
                 {
-                    <span class="mb-4">Немає в наявності</span>
+                    <span>Немає в наявності</span>
                 }
                 
                 <div class="price">
@@ -51,4 +56,3 @@
         </div>
     }
 </div>
-

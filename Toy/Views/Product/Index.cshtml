@@ -1,25 +1,20 @@
 ﻿@using Toy.Utilit
 @model dynamic
 @{
-    bool isProduct = @Model.product.Amount > 0;
-    bool hasDiscrount = @Model.Discount != null;
+    bool isProduct = Model.product.Amount > 0;
+    bool hasDiscrount = Model.Discount != null;
+    bool hasCategory = Model.product.CategoryId != null;
 }
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><img src="~/img/sign/home.png" alt="home sign"/></a></li>
-        @if (Model.product.Category?.Name != null)
-        {
-            <li class="breadcrumb-item"><a asp-controller="Category" asp-action="Index" asp-route-id="@Model.product.CategoryId">@Model.product.Category.Name</a></li>
-        }
-        <li class="breadcrumb-item">@Model.product.Name</li>
-    </ol>
-</nav>
-<div class="w-100 product-parent ">
-    <div class="product-img me-md-5 me-2 me-sm-3 float-start">
-        <img src="~/img/@if(@Model.PhotoUrl!=null){@Model.PhotoUrl}else{@StaticVariables.defaultPicture}"
+@await Html.PartialAsync("_BreadCrumb", new object[] { Model.product.Name, 
+    (hasCategory) ? Model.product.Category.Name : null,
+    (hasCategory)? "Category" : null,
+(hasCategory)? Model.product.CategoryId: null})
+<div class="w-100 product-parent d-flex">
+    <div class="product-img me-md-5 me-2 me-sm-3">
+        <img src="~/img/@if(Model.PhotoUrl!=null){@Model.PhotoUrl}else{@StaticVariables.defaultPicture}"
              class="card-img-top" alt="@Model.product.Name">
     </div>
-    <div class="float-start">
+    <div>
         <h2 class="product-name">@Model.product.Name</h2>
         <div class="d-flex">
             @await Html.PartialAsync("_Rating", new object[3] { @Model.MarkAvg, @Model.CommentCount, @Model.product.Id })
@@ -126,12 +121,14 @@
                 }
             </table>
         </div>
-        @if (Model.product.Description != null)
-        {
-            <span>Опис:</span>
-            <div class="product-description flex-wrap mb-2">@Model.product.Description</div>
-        }
     </div>
 </div>
 
+<div>
+    @if (Model.product.Description != null)
+    {
+        <span>Опис:</span>
+        <div class="product-description mb-2">@Model.product.Description</div>
+    }
+</div>
 
