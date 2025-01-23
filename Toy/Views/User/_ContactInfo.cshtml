@@ -1,0 +1,16 @@
+﻿@using Toy.Utilit
+@model Dictionary<string, string>
+@{
+    bool isModel = Model != null;
+}
+<div class="form-floating">
+    <input type="text" class="form-control" id="contact-info" autocomplete="off"
+           name="contact-info" minlength="@StaticVariables.minPhoneEmainLength" pattern="(@StaticVariables.regEmail)|(@StaticVariables.regPhone)"
+           value="@(isModel && Model.ContainsKey("contact-info-data")? Model["contact-info-data"] :"")"
+           title="@StaticVariables.contactInfo" required>
+    <label for="contact-info">Пошта або телефон</label>
+    @if (isModel && Model.ContainsKey("error-contact-info"))
+    {
+        <span class="span-error">@Model["error-contact-info"]</span>
+    }
+</div>

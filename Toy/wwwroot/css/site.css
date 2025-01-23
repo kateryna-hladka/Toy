@@ -87,7 +87,8 @@ ul li {
     list-style-type: none;
 }
 
-footer, .card-product h5, .decoration {
+footer, .card-product h5, .decoration, .form-signin > div:last-child,
+.form-signup > div:last-child {
     font-size: 0.9rem;
 }
 
@@ -99,7 +100,7 @@ a {
     text-decoration: none;
 }
 
-a:not([class=register-link]) {
+a:not([class=register-link], [class=index-link]) {
     color: black;
 } 
 
@@ -385,17 +386,13 @@ image-block > a :hover, .basket:hover, .add-product, .delete-product {
     grid-template-rows: 0fr 1fr 0.5fr;
 }
 
-.form-signin {
+.form-signin, .form-signup {
     max-width: 350px;
     padding: 1rem;
 }
 
 .user-form input:focus, .user-form button:focus, .user-form button:active:focus {
     box-shadow: none;
-}
-
-.user-form > input:focus:invalid {
-    border: 1px solid var(--orange);
 }
 
 .span-error, div.error {
@@ -406,7 +403,8 @@ div.error {
     margin: auto
 }
 
-a:hover, form-signin > div > a.register-link {
+a:hover, .form-signin > div > a.register-link,
+.form-signup > div > a.index-link {
     color: var(--blue);
 }
 

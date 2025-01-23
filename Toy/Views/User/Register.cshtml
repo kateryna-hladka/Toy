@@ -1,26 +1,48 @@
-﻿@* @using (Html.BeginForm("Index", "User", FormMethod.Post, new { @class = "user-form" }))
-{
-    <h1 class="h3 mb-3 fw-normal">Вхід</h1>
-    <div class="form-floating">
-        <input type="text" class="form-control" id="contact-info" autocomplete="off"
-                name="contact-info" minlength="5" pattern="(@StaticVariables.regEmail)|(@StaticVariables.regPhone)"
-                value="@(isModel && Model.ContainsKey("contact-info-data")? Model["contact-info-data"] :"")"
-                title="@StaticVariables.contactInfo" required>
-        <label for="contact-info">Пошта або телефон</label>
-        @if (isModel && Model.ContainsKey("error-contact-info"))
-        {
-            <span class="span-error">@Model["error-contact-info"]</span>
-        }
+﻿@using Toy.Utilit
+@model Dictionary<string, string>
+@{
+    bool isModel = Model != null;
+}
+@await Html.PartialAsync("_BreadCrumb", new object[] { "Реєстрація" })
+<div class="form-signup w-100 m-auto mt-5">
+    @if (isModel && Model.ContainsKey("user-exist"))
+    {
+        <div class="alert error p-0" role="alert">
+            @Model["user-exist"]
+        </div>
+    }
+    @using (Html.BeginForm("Register", "User", FormMethod.Post, new { @class = "user-form" }))
+    {
+        <h1 class="h3 mb-3 fw-normal">Реєстрація</h1>
+        <div class="form-floating">
+            <input type="text" class="form-control" id="user-name" autocomplete="off"
+                   name="user-name" minlength="2" maxlength="20" pattern="@StaticVariables.regUserName"
+                   value="@(isModel && Model.ContainsKey("user-name-data")? Model["user-name-data"] :"")"
+                   title="@StaticVariables.nameInfo" required>
+            <label for="user-name">Ім'я</label>
+            @if (isModel && Model.ContainsKey("error-user-name"))
+            {
+                <span class="span-error">@Model["error-user-name"]</span>
+            }
+        </div>
+        <div class="form-floating mt-2 mb-2">
+            <input type="text" class="form-control" id="user-surname" autocomplete="off"
+                   name="user-surname" minlength="3" maxlength="30" pattern="@StaticVariables.regUserSurname"
+                   value="@(isModel && Model.ContainsKey("user-surname-data") ? Model["user-surname-data"] : "")"
+                   title="@StaticVariables.surnameInfo" required>
+            <label for="user-surname">Прізвище</label>
+            @if (isModel && Model.ContainsKey("error-user-surname"))
+            {
+                <span class="span-error">@Model["error-user-surname"]</span>
+            }
+        </div>
+        @await Html.PartialAsync("/Views/User/_ContactInfo.cshtml", Model)
+        @await Html.PartialAsync("/Views/User/_Password.cshtml", Model)
+
+        <button type="submit" class="btn mt-2 user-form-button">Реєстрація</button>
+    }
+    <div class="mt-2">
+        Вже зареєстровані?
+        <a class="index-link" asp-controller="User" asp-action="Index">Увійти</a>
     </div>
-    <div class="form-floating mt-2">
-        <input type="password" class="form-control" required
-                name="password" id="password" minlength="4" maxlength="8"
-                title="@StaticVariables.passwordInfo">
-        <label for="password">Пароль</label>
-        @if (isModel && Model.ContainsKey("error-password"))
-        {
-            <span class="span-error">@Model["error-password"]</span>
-        }
-    </div>
-    <button type="submit" class="btn mt-2 user-form-button">Увійти</button>
-} *@
+</div>
