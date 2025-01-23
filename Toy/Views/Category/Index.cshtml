@@ -45,13 +45,9 @@
                     @await Html.PartialAsync("_Price", new object[6] { hasDiscount, hasProduct, product.product.Price, product.UnitPriceName, product.Discount, product.UnitDiscountName })
                     @if (hasProduct)
                     {
-                        <a asp-controller="Basket" asp-action="Index" asp-route-id="@product.product.Id">
-                            <span class="basket"></span>
-                        </a>
+                        <span class="basket" data-product-id="@product.product.Id"></span>
                     }
                 </div>
-                
-                @* <a href="#" class="btn btn-primary">Go somewhere</a> *@
             </div>
         </div>
     }

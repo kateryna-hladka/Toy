@@ -3,21 +3,18 @@
 @{
     bool isProduct = Model.product.Amount > 0;
     bool hasDiscrount = Model.Discount != null;
-    bool hasCategory = Model.product.CategoryId != null;
 }
-@await Html.PartialAsync("_BreadCrumb", new object[] { Model.product.Name, 
-    (hasCategory) ? Model.product.Category.Name : null,
-    (hasCategory)? "Category" : null,
-(hasCategory)? Model.product.CategoryId: null})
+@await Html.PartialAsync("_BreadCrumb", new object[] { Model.product.Name, Model.product.Category.Name, 
+    "Category", Model.product.CategoryId})
 <div class="w-100 product-parent d-flex">
     <div class="product-img me-md-5 me-2 me-sm-3">
-        <img src="~/img/@if(Model.PhotoUrl!=null){@Model.PhotoUrl}else{@StaticVariables.defaultPicture}"
+        <img src="~/img/@(Model.PhotoUrl ?? @StaticVariables.defaultPicture)"
              class="card-img-top" alt="@Model.product.Name">
     </div>
     <div>
         <h2 class="product-name">@Model.product.Name</h2>
         <div class="d-flex">
-            @await Html.PartialAsync("_Rating", new object[3] { @Model.MarkAvg, @Model.CommentCount, @Model.product.Id })
+            @await Html.PartialAsync("_Rating", new object[3] {Model.MarkAvg, Model.CommentCount, Model.product.Id })
         </div>
 
         @if (isProduct)
@@ -33,7 +30,7 @@
             {
                 <span>@Model.product.Price.ToString("0.##") @Model.UnitPriceName</span>
             }
-            @await Html.PartialAsync("_Price", new object[6] { hasDiscrount, isProduct, @Model.product.Price, @Model.UnitPriceName, @Model.Discount, @Model.UnitDiscountName })
+            @await Html.PartialAsync("_Price", new object[6] { hasDiscrount, isProduct, Model.product.Price, Model.UnitPriceName, Model.Discount, Model.UnitDiscountName })
         </div>
         <div class="add-basket mt-2">
             <span class="choose-amount">
@@ -51,7 +48,6 @@
                     <td>
                         Від @Model.product.AgeFrom @(Model.product.AgeTo != null ? $" до {Model.product.AgeTo} {Transform.TextFormAge(Model.product.AgeTo)}" : Transform.TextFormAge(Model.product.AgeFrom))
                     </td>
-
                 </tr>
                 @if (Model.product.Brand?.Name != null)
                 {
@@ -88,13 +84,10 @@
                         <td>@Transform.TextFormSex(Model.product.Sex)</td>
                     </tr>
                 }
-                @if (Model.product.Category?.Name != null)
-                {
-                    <tr>
-                        <td>Тип товару</td>
-                        <td>@Model.product.Category.Name</td>
-                    </tr>
-                }
+                <tr>
+                    <td>Тип товару</td>
+                    <td>@Model.product.Category.Name</td>
+                </tr>
                 @if (Model.UnitWeightName != null)
                 {
                     <tr>

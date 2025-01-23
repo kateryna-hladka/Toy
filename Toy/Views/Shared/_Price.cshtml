@@ -11,6 +11,6 @@
 
 @if (hasDiscount && hasProduct)
 {
-    <span>@Toy.Utilit.Discount.GetPriceWithDiscount(price, discount, unitDiscountName).ToString("0.##") @unitPriceName</span>
+    <span class="new-price">@Toy.Utilit.Discount.GetPriceWithDiscount(price, discount, unitDiscountName).ToString("0.##") @unitPriceName</span>
 }
 

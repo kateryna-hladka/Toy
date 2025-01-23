@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -26,7 +26,7 @@
                     <a asp-controller="Home" asp-action="Privacy"><img src="~/img/header/basket.png" alt="Basket icon" /></a>
                 </li>
                 <li class="ms-md-3">
-                    <a asp-controller="Home" asp-action="Privacy"><img src="~/img/header/user.png" alt="User icon" /></a>
+                    <a asp-controller="User" asp-action="Index"><img src="~/img/header/user.png" alt="User icon" /></a>
                 </li>
             </ul>
         </div>
@@ -70,6 +70,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/addToBasket.js" asp-append-version="true"></script>
+    <script src="~/js/signIn.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
