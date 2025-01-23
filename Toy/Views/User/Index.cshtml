@@ -1,0 +1,44 @@
+﻿@using Toy.Utilit
+@model Dictionary<string, string>
+@{
+    bool isModel = Model != null;
+}
+@await Html.PartialAsync("_BreadCrumb", new object[] {"Вхід"})
+<div class="form-signin w-100 m-auto mt-5">
+    @if (isModel && Model.ContainsKey("error-sign-in"))
+    {
+        <div class="alert error" role="alert">
+            @Model["error-sign-in"]
+        </div>
+    }
+    @using (Html.BeginForm("Index", "User", FormMethod.Post, new { @class = "user-form" }))
+    {
+        <h1 class="h3 mb-3 fw-normal">Вхід</h1>
+        <div class="form-floating">
+            <input type="text" class="form-control" id="contact-info" autocomplete="off"
+                   name="contact-info" minlength="5" pattern="(@StaticVariables.regEmail)|(@StaticVariables.regPhone)"
+                   value="@(isModel && Model.ContainsKey("contact-info-data")? Model["contact-info-data"] :"")"
+                   title="@StaticVariables.contactInfo" required>
+            <label for="contact-info">Пошта або телефон</label>
+            @if (isModel && Model.ContainsKey("error-contact-info"))
+            {
+                <span class="span-error">@Model["error-contact-info"]</span>
+            }
+        </div>
+        <div class="form-floating mt-2">
+            <input type="password" class="form-control" required
+                   name="password" id="password" minlength="4" maxlength="8"
+                   title="@StaticVariables.passwordInfo">
+            <label for="password">Пароль</label>
+            @if (isModel && Model.ContainsKey("error-password"))
+            {
+                <span class="span-error">@Model["error-password"]</span>
+            }
+        </div>
+        <button type="submit" class="btn mt-2 user-form-button">Увійти</button>
+    }
+    <div>
+        Ще не зареєстровані?
+        <a class="register-link" asp-controller="User" asp-action="Register">Реєстрація</a>
+    </div>
+</div>
