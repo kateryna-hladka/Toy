@@ -1,5 +1,7 @@
-﻿using System.Linq.Expressions;
+﻿using System.Linq;
+using System.Linq.Expressions;
 using Toy.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Toy.Utilit
 {
@@ -10,7 +12,7 @@ namespace Toy.Utilit
         {
             ToyContext = new ToyContext();
         }
-        public dynamic GetProduct(int? CategoryId, int? productId)
+        public dynamic? GetProduct(int? CategoryId, int? productId)
         {
             var products = from product in ToyContext.Products
                            join photo_product in ToyContext.PhotoProducts on product.Id equals photo_product.ProductId into ppj
@@ -20,7 +22,7 @@ namespace Toy.Utilit
                            let mark = ToyContext.Reviews.Where(r => r.ProductId == product.Id).Average(r => r.Mark)
                            let comment = ToyContext.Reviews.Where(r => r.ProductId == product.Id).Count()
                            where (CategoryId != null && (product.CategoryId == CategoryId && (photo_product_result.Photo.IsMain == true || photo_product_result == null)))
-                           || (productId !=null && product.Id == productId)
+                           || (productId != null && product.Id == productId)
                            select new
                            {
                                product,
@@ -42,6 +44,12 @@ namespace Toy.Utilit
                            };
             return (productId != null) ? products.FirstOrDefault() : products;
         }
+
+        public User? GetUserByFilter(Func<User, bool> filter)
+        => ToyContext.User
+                    .Where(filter)
+                    .Select(u => new User() { Id = u.Id, Name = u.Name, Surname = u.Surname, Email = u.Email, Phone = u.Phone, Password = u.Password } )
+                    .FirstOrDefault();
 
     }
 }

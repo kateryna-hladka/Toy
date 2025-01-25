@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using System.Text;
 using Toy.Models;
 using Toy.Utilit;
 
@@ -28,23 +30,15 @@ namespace Toy.Controllers
                 }
                 else
                 {
-                    using (ToyContext toyContext = new())
-                    {
-                        int user = toyContext.User
-                                    .Where(u =>
-                                    (u.Email == contactInfo ||
-                                     u.Phone == contactInfo) &&
-                                     u.Password == password
-                                    )
-                                    .Select(u => u.Id)
-                                    .FirstOrDefault();
+                    DataBaseHelper dataBase = new();
+                    User? user = dataBase.GetUserByFilter(u => u.Email == contactInfo ||
+                                                                u.Phone == contactInfo);
 
-                        if (user == 0)
-                        {
-                            errors.Add("contact-info-data", contactInfo);
-                            errors.Add("error-sign-in", "Невірна пошта/телефон або пароль");
-                            return View(errors);
-                        }
+                    if (user is null || !BCrypt.Net.BCrypt.Verify(password, user?.Password))
+                    {
+                        errors.Add("contact-info-data", contactInfo);
+                        errors.Add("error-sign-in", "Невірна пошта/телефон або пароль");
+                        return View(errors);
                     }
                 }
 
@@ -74,28 +68,22 @@ namespace Toy.Controllers
 
                 if (CheckData.CheckPhone(contactInfo))
                 {
-                    using (ToyContext toyContext = new ())
-                    {
-                        int user = toyContext.User
-                                    .Where(u => u.Phone == contactInfo)
-                                    .Select(u => u.Id)
-                                    .FirstOrDefault();
-                        if (user != 0)
-                            errors.Add("user-exist", "Користувач вже існує!");
-                    }
+                    DataBaseHelper dataBase = new();
+                    User? user = dataBase.GetUserByFilter(u => u.Phone == contactInfo);
+
+                    if (user is not null)
+                        errors.Add("user-exist", "Користувач вже існує!");
+
                     phone = true;
                 }
                 else if (CheckData.CheckEmail(contactInfo))
                 {
-                    using(ToyContext toyContext = new())
-                    {
-                        int user = toyContext.User
-                                    .Where(u => u.Email == contactInfo)
-                                    .Select(u => u.Id)
-                                    .FirstOrDefault();
-                        if (user != 0)
-                            errors.Add("user-exist", "Користувач вже існує!");
-                    }
+                    DataBaseHelper dataBase = new();
+                    User? user = dataBase.GetUserByFilter(u => u.Email == contactInfo);
+
+                    if (user is not null)
+                        errors.Add("user-exist", "Користувач вже існує!");
+
                     email = true;
                 }
                 else
@@ -116,11 +104,14 @@ namespace Toy.Controllers
                 {
                     using (ToyContext toyContext = new())
                     {
-                        toyContext.User.Add(new User() 
-                        { Name = userName, Surname = userSurname, 
-                          Email = (email)? contactInfo : null, 
-                          Phone = (phone)? contactInfo : null,
-                          Password = password
+
+                        toyContext.User.Add(new User()
+                        {
+                            Name = userName,
+                            Surname = userSurname,
+                            Email = (email) ? contactInfo : null,
+                            Phone = (phone) ? contactInfo : null,
+                            Password = BCrypt.Net.BCrypt.HashPassword(password)
                         });
                         toyContext.SaveChanges();
                     }
