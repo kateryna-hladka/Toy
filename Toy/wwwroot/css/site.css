@@ -391,7 +391,12 @@ image-block > a :hover, .basket:hover, .add-product, .delete-product {
     padding: 1rem;
 }
 
-.user-form input:focus, .user-form button:focus, .user-form button:active:focus {
+.add-basket button:focus-visible {
+    outline: none;
+}
+
+.user-form input:focus, .user-form button:focus,
+.user-form button:active:focus {
     box-shadow: none;
 }
 
@@ -406,6 +411,14 @@ div.error {
 a:hover, .form-signin > div > a.register-link,
 .form-signup > div > a.index-link {
     color: var(--blue);
+}
+
+.card .send-to-basket{
+    background-image: url('../img/sign/basket green.png');
+}
+
+button.send-to-basket{
+    background-color: var(--green);
 }
 
 @media (max-width: 768px) {
