@@ -3,23 +3,30 @@
 @{
     bool isModel = Model != null;
 }
-@await Html.PartialAsync("_BreadCrumb", new object[] {"Вхід"})
-<div class="form-signin w-100 m-auto mt-5">
-    @if (isModel && Model.ContainsKey("error-sign-in"))
-    {
-        <div class="alert error p-0" role="alert">
-            @Model["error-sign-in"]
+@if (!Model.ContainsKey("user-loging") || Model["user-loging"] == null)
+{
+    @await Html.PartialAsync("_BreadCrumb", new object[] { "Вхід" })
+    <div class="form-signin w-100 m-auto mt-5">
+        @if (isModel && Model.ContainsKey("error-sign-in"))
+        {
+            <div class="alert error p-0" role="alert">
+                @Model["error-sign-in"]
+            </div>
+        }
+        @using (Html.BeginForm("Index", "User", FormMethod.Post, new { @class = "user-form" }))
+        {
+            <h1 class="h3 mb-3 fw-normal">Вхід</h1>
+            @await Html.PartialAsync("/Views/User/_ContactInfo.cshtml", Model)
+            @await Html.PartialAsync("/Views/User/_Password.cshtml", Model)
+            <button type="submit" class="btn mt-2 user-form-button">Увійти</button>
+        }
+        <div class="mt-2">
+            Ще не зареєстровані?
+            <a class="register-link" asp-controller="User" asp-action="Register">Реєстрація</a>
         </div>
-    }
-    @using (Html.BeginForm("Index", "User", FormMethod.Post, new { @class = "user-form" }))
-    {
-        <h1 class="h3 mb-3 fw-normal">Вхід</h1>
-        @await Html.PartialAsync("/Views/User/_ContactInfo.cshtml", Model)
-        @await Html.PartialAsync("/Views/User/_Password.cshtml", Model)
-        <button type="submit" class="btn mt-2 user-form-button">Увійти</button>
-    }
-    <div class="mt-2">
-        Ще не зареєстровані?
-        <a class="register-link" asp-controller="User" asp-action="Register">Реєстрація</a>
     </div>
-</div>
+}
+else
+{
+    <div>Correct</div>
+}

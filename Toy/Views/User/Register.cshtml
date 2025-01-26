@@ -3,6 +3,7 @@
 @{
     bool isModel = Model != null;
 }
+@if(!Model.ContainsKey("user-loging") || Model["user-loging"] == null){
 @await Html.PartialAsync("_BreadCrumb", new object[] { "Реєстрація" })
 <div class="form-signup w-100 m-auto mt-5">
     @if (isModel && Model.ContainsKey("user-exist"))
@@ -46,3 +47,8 @@
         <a class="index-link" asp-controller="User" asp-action="Index">Увійти</a>
     </div>
 </div>
+}
+else
+{
+        <div>Correct</div>
+}

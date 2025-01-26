@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using Toy.Models;
@@ -10,6 +11,9 @@ namespace Toy.Controllers
     {
         public IActionResult Index()
         {
+            Dictionary<string, string?> userExist = new();
+            userExist.Add("user-loging", Request.Cookies["user-login"]);
+
             if (Request.Method == "POST")
             {
 
@@ -40,16 +44,22 @@ namespace Toy.Controllers
                         errors.Add("error-sign-in", "Невірна пошта/телефон або пароль");
                         return View(errors);
                     }
+                    if (HttpContext.Session.GetInt32("userId") == null)
+                    {
+                        HttpContext.Session.SetInt32("userId", user.Id);
+                        HttpContext.Response.Cookies.Append("user-login", "exist");
+                    }
+                    return View("_Success");
                 }
-
-                return View();
             }
             else
-                return View();
+                return View(userExist);
         }
 
         public IActionResult Register()
         {
+            Dictionary<string, string?> userExist = new();
+            userExist.Add("user-loging", Request.Cookies["user-login"]);
             if (Request.Method == "POST")
             {
                 string userName = Request.Form["user-name"].ToString();
@@ -119,7 +129,7 @@ namespace Toy.Controllers
                 }
             }
             else
-                return View();
+                return View(userExist);
 
         }
     }

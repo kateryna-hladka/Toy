@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace Toy.Controllers
 
         public IActionResult Index()
         {
+            HttpContext.Session.SetString("newUser", HttpContext.Session.Id);
             using (ToyContext toyContext = new())
             {
                 List<Category> categories = [.. toyContext.Categories
