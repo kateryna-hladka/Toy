@@ -1,10 +1,15 @@
-﻿let addBasket = document.querySelector(".add-basket");
+﻿let localStorageLengthNotZero = localStorage.length !== 0;
+let addBasket = document.querySelector(".add-basket");
+let productExistInBasket = "Товар вже додано до кошика";
+
 addBasket?.addEventListener("click", function (event) {
+    let elem = event.target;
     let output = document.querySelector("output");
     let outputValue = parseInt(output.value);
-    let elem = event.target;
 
-    if (localStorage.length === 0 || localStorage.getItem(`product-${elem.getElementsByTagName("BUTTON")[0]?.getAttribute("data-product-id")}-in-basket`)) {
+    let productId = getProductId(addBasket.getElementsByTagName("BUTTON")[0]);
+
+    if (localStorageIsNull(productId)) {
         if (elem.classList.contains("add-product")) {
             if (outputValue + 1 <= parseInt(output.getAttribute("maxValue")))
                 output.value = ++outputValue;
@@ -13,34 +18,36 @@ addBasket?.addEventListener("click", function (event) {
             if (outputValue - 1 >= parseInt(output.getAttribute("minValue")))
                 output.value = --outputValue;
         }
+        if (elem.tagName === "BUTTON") {
+            displayChoosePanel();
+            sendProductToBasket(productId, elem, outputValue);
+            changeButtonText(elem);
+        }
     }
-    if (elem.tagName === "BUTTON") {
-        let productId = elem.getAttribute("data-product-id");
-        sendProductToBasket(productId, elem, outputValue);
-    }
+    else
+        alert(productExistInBasket);
 });
 
 document.addEventListener("DOMContentLoaded", function () {
     let cardProduct = document.querySelector(".card-product");
-    if (localStorage.length !== 0) {
+
+    if (localStorageLengthNotZero) {
         let products = cardProduct?.getElementsByClassName("basket");
         if (products != null)
             for (let p of products) {
-                let productId = p.getAttribute("data-product-id");
+                let productId = getProductId(p);
 
-                if (!isNaN(Number(productId)) && productId === localStorage.getItem(`product-${productId}-in-basket`)) {
-                    p.classList.add("send-to-basket")
-                }
+                if (!isNaN(Number(productId)) && localStorageHasProduct(productId))
+                    elemMarkAddBasketClass(p);
             }
         else {
             if (addBasket !== null) {
                 let elem = addBasket.getElementsByTagName("BUTTON")[0];
-                let productId = elem.getAttribute("data-product-id");
-                if (!isNaN(Number(productId)) && productId === localStorage.getItem(`product-${productId}-in-basket`)) {
-                    let output = document.querySelector("output");
-                    output.innerHTML = localStorage.getItem(`product-${productId}-amount`);
-                    elem.classList.add("send-to-basket");
-                    elem.innerHTML = "В кошику";
+                let productId = getProductId(elem);
+                if (!isNaN(Number(productId)) && localStorageHasProduct(productId)) {
+                    displayChoosePanel();
+                    elemMarkAddBasketClass(elem);
+                    changeButtonText(elem);
                 }
             }
         }
@@ -49,14 +56,42 @@ document.addEventListener("DOMContentLoaded", function () {
         let target = event.target;
         if (target.closest(".basket")) {
             let basketElement = target.closest(".basket");
-            let productId = basketElement.getAttribute("data-product-id");
-            sendProductToBasket(productId, basketElement);
+            let productId = getProductId(basketElement);
+            if (localStorageIsNull(productId))
+                sendProductToBasket(productId, basketElement);
+            else
+                alert(productExistInBasket);
         }
     });
 });
 
+function localStorageIsNull(productId) {
+    return (!localStorageLengthNotZero || localStorage.getItem(`product-${productId}-in-basket`) === null)
+}
+
+function localStorageHasProduct(productId) {
+    return (productId === localStorage.getItem(`product-${productId}-in-basket`))
+}
+
+function getProductId(elem) {
+    return elem?.getAttribute("data-product-id");
+}
+
+function elemMarkAddBasketClass(elem) {
+    elem.classList.add("send-to-basket");
+}
+
+function displayChoosePanel() {
+    let chooseAmount = addBasket.getElementsByClassName("choose-amount")[0];
+    chooseAmount.style.display = "none";
+}
+
+function changeButtonText(elem) {
+    elem.innerHTML = "В кошику";
+}
+
 function sendProductToBasket(productId, element, amount = null) {
-    if (!isNaN(Number(productId)) && !element.classList.contains("send-to-basket") &&
+    if (!isNaN(Number(productId)) &&
         ((amount != null && !isNaN(Number(amount))) || amount == null)) {
 
         fetch('/Basket/Add', {
@@ -69,7 +104,7 @@ function sendProductToBasket(productId, element, amount = null) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    element.classList.add("send-to-basket");
+                    elemMarkAddBasketClass(element);
                     localStorage.setItem(`product-${productId}-in-basket`, `${productId}`);
                     localStorage.setItem(`product-${productId}-amount`, `${amount ?? 1}`);
                 } else {
