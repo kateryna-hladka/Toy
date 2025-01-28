@@ -9,6 +9,11 @@ namespace Toy.Controllers
 {
     public class UserController : Controller
     {
+        private readonly ToyContext _context;
+        public UserController(ToyContext context)
+        {
+            _context = context;
+        }
         public IActionResult Index()
         {
             Dictionary<string, string?> userExist = new();
@@ -110,10 +115,7 @@ namespace Toy.Controllers
                 }
                 else
                 {
-                    using (ToyContext toyContext = new())
-                    {
-
-                        toyContext.User.Add(new User()
+                    _context.User.Add(new User()
                         {
                             Name = userName,
                             Surname = userSurname,
@@ -121,8 +123,8 @@ namespace Toy.Controllers
                             Phone = (phone) ? contactInfo : null,
                             Password = BCrypt.Net.BCrypt.HashPassword(password)
                         });
-                        toyContext.SaveChanges();
-                    }
+                    _context.SaveChanges();
+                    
                     return View("_Success");
                 }
             }

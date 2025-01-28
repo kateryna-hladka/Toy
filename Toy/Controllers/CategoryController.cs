@@ -10,15 +10,17 @@ namespace Toy.Controllers
 {
     public class CategoryController : Controller
     {
+        private readonly ToyContext _context;
+
+        public CategoryController(ToyContext context)
+        {
+            _context = context;
+        }
         public IActionResult Index(int id)
         {
-            using (ToyContext toyContext = new())
-            {
-                Utilit.DataBaseHelper dataBaseHelper = new();
-                IEnumerable<dynamic> productsDate = dataBaseHelper.GetProduct(id, null);
-                return View(productsDate);
-            }
-
+            Utilit.DataBaseHelper dataBaseHelper = new();
+            IEnumerable<dynamic> productsDate = dataBaseHelper.GetProduct(id, null);
+            return View(productsDate);
         }
     }
 }

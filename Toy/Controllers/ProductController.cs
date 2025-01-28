@@ -5,15 +5,19 @@ namespace Toy.Controllers
 {
     public class ProductController : Controller
     {
+        private readonly ToyContext _context;
+        public ProductController(ToyContext context)
+        {
+            _context= context;
+        }
+
         public IActionResult Index(int id)
         {
-            using (ToyContext toyContext = new())
-            {
-                Utilit.DataBaseHelper dataBaseHelper = new ();
-                var product = dataBaseHelper.GetProduct(null, id);
+            Utilit.DataBaseHelper dataBaseHelper = new ();
+            var product = dataBaseHelper.GetProduct(null, id);
 
-                return View(product);
-            }
+            return View(product);
+            
         }
     }
 }
