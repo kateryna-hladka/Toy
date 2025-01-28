@@ -10,14 +10,8 @@ addBasket?.addEventListener("click", function (event) {
     let productId = getProductId(addBasket.getElementsByTagName("BUTTON")[0]);
 
     if (localStorageIsNull(productId)) {
-        if (elem.classList.contains("add-product")) {
-            if (outputValue + 1 <= parseInt(output.getAttribute("maxValue")))
-                output.value = ++outputValue;
-        }
-        if (elem.classList.contains("delete-product")) {
-            if (outputValue - 1 >= parseInt(output.getAttribute("minValue")))
-                output.value = --outputValue;
-        }
+        changeProductAmount(elem, output, outputValue);
+        
         if (elem.tagName === "BUTTON") {
             displayChoosePanel();
             sendProductToBasket(productId, elem, outputValue);
@@ -28,9 +22,10 @@ addBasket?.addEventListener("click", function (event) {
         alert(productExistInBasket);
 });
 
+
 document.addEventListener("DOMContentLoaded", function () {
     let cardProduct = document.querySelector(".card-product");
-
+    let productInBusket = document.getElementsByClassName("in-basket")[0];
     if (localStorageLengthNotZero) {
         let products = cardProduct?.getElementsByClassName("basket");
         if (products != null)
@@ -63,13 +58,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert(productExistInBasket);
         }
     });
+
+    productInBusket?.addEventListener("click", function (event) {
+        let elem = event.target;
+        let output = productInBusket.querySelector("output");
+        changeProductAmount(elem, output, parseInt(output.value));
+        
+    });
+
     setTimeout(function () {
         if (sessionStorage.getItem("clear") === null) {
             checkUserLoginStatus();
-            
+
         }
     });
 });
+
+function changeProductAmount(elem, output, outputValue) {
+    if (elem.classList.contains("add-product")) {
+        if (outputValue + 1 <= parseInt(output.getAttribute("maxValue")))
+            output.value = ++outputValue;
+    }
+    if (elem.classList.contains("delete-product")) {
+        if (outputValue - 1 >= parseInt(output.getAttribute("minValue")))
+            output.value = --outputValue;
+    }
+}
 
 function localStorageIsNull(productId) {
     return (!localStorageLengthNotZero || localStorage.getItem(`product-${productId}-in-basket`) === null)

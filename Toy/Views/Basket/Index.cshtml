@@ -9,7 +9,7 @@
 @await Html.PartialAsync("_BreadCrumb", new object[] { "Кошик" })
 @if (ModelCollection!=null)
 {
-    <div>
+    <div class="in-basket">
         @foreach (var product in (ModelCollection))
         {
             bool hasDiscount = product.Discount != null;
@@ -31,8 +31,9 @@
                             <span class="@(hasDiscount && hasProduct ? "decoration" : "")">@product.product.Price.ToString("0.##") @product.UnitPriceName</span>
                             @await Html.PartialAsync("_Price", new object[6] { hasDiscount, hasProduct, product.product.Price, product.UnitPriceName, product.Discount, product.UnitDiscountName })
                         </div>
-                        <div class="d-flex align-items-center">
-                            @await Html.PartialAsync("_ChooseProductAmount", new short[]{ /* (short)product.MaxAmount, */ (short)product.product.Amount })
+                        <div class="d-flex align-items-center choose-basket-parent">
+                            @*new short[] { (product.MaxAmount == null) ? product.product.Amount : product.MaxAmount, product.Amount ?? null }*@
+                            @await Html.PartialAsync("_ChooseProductAmount",new short[] { (short)product.MaxAmount, (short)product.Amount })
                             <span class="rubbish-bin ms-2"></span>
                         </div>
                     </div>

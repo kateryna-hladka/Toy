@@ -18,7 +18,6 @@ namespace Toy.Controllers
 
         public IActionResult Index()
         {
-            HttpContext.Session.SetString("newUser", HttpContext.Session.Id);
             using (ToyContext toyContext = new())
             {
                 List<Category> categories = [.. toyContext.Categories

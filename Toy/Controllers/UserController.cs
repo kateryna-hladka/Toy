@@ -134,6 +134,7 @@ namespace Toy.Controllers
         [Route("api/check-login")]
         public IActionResult CheckLoginStatus()
         {
+            HttpContext.Session.SetString("newUser", HttpContext.Session.Id);
 
             if (Request.Cookies["login"] != null)
                 return Json(new { loggedIn = true, session = false });
