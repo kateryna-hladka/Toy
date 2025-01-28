@@ -33,11 +33,7 @@
             @await Html.PartialAsync("_Price", new object[6] { hasDiscrount, isProduct, Model.product.Price, Model.UnitPriceName, Model.Discount, Model.UnitDiscountName })
         </div>
         <div class="add-basket mt-2">
-            <span class="choose-amount">
-                <span class="delete-product">-</span>
-                <span><output minValue="1" maxValue="@Model.product.Amount">1</output></span>
-                <span class="add-product">+</span>
-            </span>
+            @await Html.PartialAsync("_ChooseProductAmount", new short []{Model.product.Amount})
             <button class="ms-2 ms-sm-3" type="submit" data-product-id="@Model.product.Id">До кошика</button>
         </div>
         <div class="mt-2 mb-2">

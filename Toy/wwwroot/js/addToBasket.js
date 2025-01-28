@@ -63,14 +63,27 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert(productExistInBasket);
         }
     });
+    setTimeout(function () {
+        if (sessionStorage.getItem("clear") === null) {
+            checkUserLoginStatus();
+            
+        }
+    });
 });
 
 function localStorageIsNull(productId) {
     return (!localStorageLengthNotZero || localStorage.getItem(`product-${productId}-in-basket`) === null)
 }
 
+function sessionStorageIsNull(productId) {
+    return (!sessiongStorageLengthNotZero || sessionStorage.getItem(`product-${productId}-in-basket`) === null)
+}
+
 function localStorageHasProduct(productId) {
     return (productId === localStorage.getItem(`product-${productId}-in-basket`))
+}
+function sessionStorageHasProduct(productId) {
+    return (productId === sessionStorage.getItem(`product-${productId}-in-basket`))
 }
 
 function getProductId(elem) {
@@ -115,4 +128,22 @@ function sendProductToBasket(productId, element, amount = null) {
                 console.error('Error:', error);
             });
     }
+}
+
+function checkUserLoginStatus() {
+    fetch('/api/check-login', {
+        method: 'GET',
+        credentials: 'same-origin'
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.loggedIn) {
+                localStorage.clear();
+
+                sessionStorage.setItem("clear", "yes");
+            }
+        })
+        .catch(error => {
+            console.error("Помилка перевірки статусу логіну:", error);
+        });
 }

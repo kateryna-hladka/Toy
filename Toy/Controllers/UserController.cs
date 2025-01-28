@@ -12,7 +12,7 @@ namespace Toy.Controllers
         public IActionResult Index()
         {
             Dictionary<string, string?> userExist = new();
-            userExist.Add("user-loging", Request.Cookies["user-login"]);
+            userExist.Add("user-loging", Request.Cookies["login"]);
 
             if (Request.Method == "POST")
             {
@@ -44,11 +44,9 @@ namespace Toy.Controllers
                         errors.Add("error-sign-in", "Невірна пошта/телефон або пароль");
                         return View(errors);
                     }
-                    if (HttpContext.Session.GetInt32("userId") == null)
-                    {
-                        HttpContext.Session.SetInt32("userId", user.Id);
-                        HttpContext.Response.Cookies.Append("user-login", "exist");
-                    }
+                    if (Request.Cookies["login"] == null)
+                        HttpContext.Response.Cookies.Append("login", user.Email ?? user.Phone);
+
                     return View("_Success");
                 }
             }
@@ -59,7 +57,7 @@ namespace Toy.Controllers
         public IActionResult Register()
         {
             Dictionary<string, string?> userExist = new();
-            userExist.Add("user-loging", Request.Cookies["user-login"]);
+            userExist.Add("user-loging", Request.Cookies["login"]);
             if (Request.Method == "POST")
             {
                 string userName = Request.Form["user-name"].ToString();
@@ -131,6 +129,17 @@ namespace Toy.Controllers
             else
                 return View(userExist);
 
+        }
+
+        [Route("api/check-login")]
+        public IActionResult CheckLoginStatus()
+        {
+
+            if (Request.Cookies["login"] != null)
+                return Json(new { loggedIn = true, session = false });
+
+            else
+                return Json(new { loggedIn = false, session = true });
         }
     }
 }
