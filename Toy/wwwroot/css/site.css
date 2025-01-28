@@ -29,6 +29,10 @@ html {
         display: inline-block !important;
         border-right: 1px solid var(--black-light-opacity);
     }
+
+    .in-basket > .basket-parent {
+        max-width: 35%;
+    }
 }
 
 @media (min-width:1440px ) {
@@ -442,7 +446,7 @@ button.send-to-basket {
 }
 
 .basket-parent {
-    max-width: 35%;
+    max-width: 60%;
     border-bottom: 1px solid var(--black-light-opacity);
 }
 

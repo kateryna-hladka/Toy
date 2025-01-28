@@ -11,7 +11,7 @@ addBasket?.addEventListener("click", function (event) {
 
     if (localStorageIsNull(productId)) {
         changeProductAmount(elem, output, outputValue);
-        
+
         if (elem.tagName === "BUTTON") {
             displayChoosePanel();
             sendProductToBasket(productId, elem, outputValue);
@@ -61,8 +61,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     productInBusket?.addEventListener("click", function (event) {
         let elem = event.target;
-        let output = productInBusket.querySelector("output");
-        changeProductAmount(elem, output, parseInt(output.value));
+        if (elem.closest(".basket-parent")) {
+            let chooseElem = elem.closest(".basket-parent")
+            let output = chooseElem.querySelector("output");
+            let productId = getProductId(chooseElem);
+            changeProductAmount(elem, output, parseInt(output.value));
+            updateProductCount(productId, elem, parseInt(output.value));
+        }
         
     });
 
@@ -160,4 +165,39 @@ function checkUserLoginStatus() {
         .catch(error => {
             console.error("Помилка перевірки статусу логіну:", error);
         });
+}
+
+function updateProductCount(productId, element, amount) {
+    if (!isNaN(Number(productId)) && !isNaN(Number(amount))) {
+
+        fetch('/Basket/Update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ productId: productId, amount: amount })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    let newPrices = Array.from(document.getElementsByClassName("new-price"));
+                    let oldPrices = Array.from(document.getElementsByClassName("price"));
+                    let combinePrice = oldPrices.concat(newPrices);
+                    let summa = 0;
+                    /*let summa = combinePrice.map(el => parseFloat(el.innerHTML) * parseInt(combinePrice.closest("OUTPUT").value));*/
+                    for (let i of combinePrice) {
+                        let amount = parseInt(i.parentNode.parentNode.getElementsByTagName("OUTPUT")[0].value);
+                        summa += parseFloat(i.innerHTML) * amount;
+                    }
+                    document.getElementsByClassName("summa")[0].innerHTML = summa;
+                    
+                }
+                else {
+                    console.error('Error in update product');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
 }

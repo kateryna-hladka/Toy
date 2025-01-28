@@ -3,6 +3,8 @@
 @{
     int[] newProduct = NewProducts.GetProducts();
     IEnumerable<dynamic> ModelCollection = Model as IEnumerable<dynamic>;
+    int Summa = 0;
+    string unitPriceName = String.Empty;
 }
 @* @await Html.PartialAsync("_CardProduct", new[]{Model}); *@
 
@@ -16,7 +18,7 @@
             bool hasProduct = product.product.Amount > 0;
             if (hasProduct)
             {
-                <div class="basket-parent d-flex flex-row flex-wrap align-items-center">
+                <div class="basket-parent d-flex flex-row align-items-center" data-product-id="@product.product.Id">
                     <div>
                         <span class="image-block">
                             <a asp-controller="Product" asp-action="Index" asp-route-id="@product.product.Id">
@@ -28,19 +30,22 @@
                     <div>
                         <div>@product.product.Name</div>
                         <div>
-                            <span class="@(hasDiscount && hasProduct ? "decoration" : "")">@product.product.Price.ToString("0.##") @product.UnitPriceName</span>
+                            <span class="@(hasDiscount && hasProduct ? "decoration" : "price")">@product.product.Price.ToString("0.##") @product.UnitPriceName</span>
                             @await Html.PartialAsync("_Price", new object[6] { hasDiscount, hasProduct, product.product.Price, product.UnitPriceName, product.Discount, product.UnitDiscountName })
                         </div>
                         <div class="d-flex align-items-center choose-basket-parent">
-                            @*new short[] { (product.MaxAmount == null) ? product.product.Amount : product.MaxAmount, product.Amount ?? null }*@
                             @await Html.PartialAsync("_ChooseProductAmount",new short[] { (short)product.MaxAmount, (short)product.Amount })
                             <span class="rubbish-bin ms-2"></span>
                         </div>
                     </div>
                 </div>
+                if (Summa == 0)
+                    unitPriceName = product.UnitPriceName;
+                Summa += (hasDiscount ? Toy.Utilit.Discount.GetPriceWithDiscount(product.product.Price, product.Discount, product.UnitDiscountName) : product.product.Price) * product.Amount;
             }
         }
     </div>
+    <div class="mt-3">Сума до сплати: <span class="ms-4 summa">@Summa.ToString("0.##") @unitPriceName</span></div>
 }
 else
 {
