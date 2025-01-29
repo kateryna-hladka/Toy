@@ -136,7 +136,9 @@ a:not([class=register-link], [class=index-link]) {
     width: 70%;
 }
 
-.popular_toy > div:last-of-type, .choose-amount, .product-characteristic, .product-img, .user-form input {
+.popular_toy > div:last-of-type, .choose-amount,
+.product-characteristic, .product-img, .user-form input,
+.basket-parent > div:first-of-type {
     border: 1px solid var(--black-light-opacity);
 }
 
@@ -191,7 +193,7 @@ span.product-not-available {
     font-weight: bold;
 }
 
-.image-block, .product-img {
+.image-block, .product-img, .parent-basket-free {
     overflow: hidden;
 }
 
@@ -201,11 +203,11 @@ span.product-not-available {
     margin: auto;
 }
 
-.image-block img, .product-img img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
+    .image-block img, .product-img img, .basket-free {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
 
 .card-body > div:first-of-type > div:last-of-type {
     float: right
@@ -363,8 +365,11 @@ button:not(:disabled).send-to-basket {
     background: var(--black-light-opacity);
 }
 
-.product-img {
+.product-img, .basket-parent div:first-of-type {
     border-radius: 5%;
+}
+
+.product-img {
     height: 25rem;
     padding: 25px;
     width: 20rem;
@@ -378,7 +383,7 @@ button:not(:disabled).send-to-basket {
     font-weight: normal;
 }
 
-.product-name {
+.product-name, h3 {
     font-size: 1.5rem;
     margin: 0;
 }
@@ -455,6 +460,23 @@ button.send-to-basket {
     height: 5rem;
 }
 
+.in-basket + div + form > button {
+    padding: 5px 10px;
+    border: none;
+    background-color: var(--light-violet);
+    color: var(--black-dark-opacity);
+    border-radius: 5px;
+}
+
+.basket-parent > div:first-child{
+    margin:10px 10px 0px;
+}
+
+.parent-basket-free {
+    width: 220px;
+    height: 220px;
+    margin: auto;
+}
 
 @media (max-width: 768px) {
     html {

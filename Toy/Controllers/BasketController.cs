@@ -159,6 +159,43 @@ namespace Toy.Controllers
             }
             return Json(new { success = true });
         }
+        [HttpPost]
+        public IActionResult Delete([FromBody] ProductRequest productRequest)
+        {
+            if (ProductRequestIdIncorrect(productRequest))
+                return Json(new { success = false, message = "Invalid product ID" });
+            if (Request.Cookies["login"] != null)
+            {
+                DataBaseHelper data = new();
+                User? user = data.GetUserByFilter(u => u.Email == Request.Cookies["login"] || u.Phone == Request.Cookies["login"]);
+                if (user != null)
+                {
+                    Basket? basket = _context.Baskets.Where(b => b.UserId == user.Id && b.ProductId == productRequest.ProductId).FirstOrDefault();
+                    if (basket != null)
+                    {
+                        _context.Baskets.Remove(basket);
+                        _context.SaveChanges();
+                        return Json(new { success = true });
+                    }
+                    else
+                        return Json(new { success = false });
+                }
+                else
+                    return Json(new { success = false });
+            }
+            else
+            {
+                string userId = HttpContext.Session.GetString($"newUser");
+                string sessionKeyProduct = HttpContext.Session.Keys.Where(key => key.Contains($"product_{userId}_{productRequest.ProductId}")).FirstOrDefault();
+                string sessionKeyAmount = HttpContext.Session.Keys.Where(key => key.Contains($"product_{userId}_{productRequest.ProductId}_amount")).FirstOrDefault();
+                if (sessionKeyProduct == null)
+                    return Json(new { success = false });
+
+                HttpContext.Session.Remove(sessionKeyProduct);
+                HttpContext.Session.Remove(sessionKeyAmount);
+            }
+                return Json(new { success = true });
+        }
         public class ProductRequest
         {
             public int ProductId { get; set; }

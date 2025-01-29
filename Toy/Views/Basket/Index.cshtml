@@ -9,9 +9,10 @@
 @* @await Html.PartialAsync("_CardProduct", new[]{Model}); *@
 
 @await Html.PartialAsync("_BreadCrumb", new object[] { "Кошик" })
-@if (ModelCollection!=null)
+@if (ModelCollection != null && ModelCollection.Count() != 0)
 {
-    <div class="in-basket">
+    <h3>В кошику:</h3>
+    <div class="in-basket mt-3">
         @foreach (var product in (ModelCollection))
         {
             bool hasDiscount = product.Discount != null;
@@ -34,7 +35,7 @@
                             @await Html.PartialAsync("_Price", new object[6] { hasDiscount, hasProduct, product.product.Price, product.UnitPriceName, product.Discount, product.UnitDiscountName })
                         </div>
                         <div class="d-flex align-items-center choose-basket-parent">
-                            @await Html.PartialAsync("_ChooseProductAmount",new short[] { (short)product.MaxAmount, (short)product.Amount })
+                            @await Html.PartialAsync("_ChooseProductAmount", new short[] { (short)product.MaxAmount, (short)product.Amount })
                             <span class="rubbish-bin ms-2"></span>
                         </div>
                     </div>
@@ -45,9 +46,18 @@
             }
         }
     </div>
-    <div class="mt-3">Сума до сплати: <span class="ms-4 summa">@Summa.ToString("0.##") @unitPriceName</span></div>
+    <div class="mt-3 mb-2">Сума до сплати: <span class="ms-4 summa">@Summa.ToString("0.##")</span> @unitPriceName</div>
+    @using (Html.BeginForm("Buy", "Product", HttpMethods.Get))
+    {
+        <button type="submit">Оформити замовлення</button>
+    }
 }
 else
 {
-    <div>Ваш кошик порожній</div>
+    <div>
+        <h3 class="text-center">Ваш кошик порожній :(</h3>
+        <div class="parent-basket-free">
+            <img class="basket-free" src="~/img/sign/shopping-cart-free.png"/>
+        </div>
+    </div>
 }

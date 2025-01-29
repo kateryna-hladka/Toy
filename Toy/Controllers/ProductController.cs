@@ -19,5 +19,9 @@ namespace Toy.Controllers
             return View(product);
             
         }
+        public IActionResult Buy()
+        {
+            return View();
+        }
     }
 }

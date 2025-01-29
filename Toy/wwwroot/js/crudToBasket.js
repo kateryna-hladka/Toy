@@ -62,13 +62,20 @@ document.addEventListener("DOMContentLoaded", function () {
     productInBusket?.addEventListener("click", function (event) {
         let elem = event.target;
         if (elem.closest(".basket-parent")) {
+
             let chooseElem = elem.closest(".basket-parent")
             let output = chooseElem.querySelector("output");
             let productId = getProductId(chooseElem);
-            changeProductAmount(elem, output, parseInt(output.value));
-            updateProductCount(productId, elem, parseInt(output.value));
+            if (!elem.classList.contains("rubbish-bin")) {
+                changeProductAmount(elem, output, parseInt(output.value));
+                updateProductCount(productId, elem, parseInt(output.value));
+            }
+            else {
+                if (confirm("Ви дійсно бажаєте видалити цей елемент з кошика?"))
+                    deleteProduct(productId);
+            }
         }
-        
+
     });
 
     setTimeout(function () {
@@ -180,17 +187,45 @@ function updateProductCount(productId, element, amount) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    localStorage.setItem(`product-${productId}-amount`, amount);
                     let newPrices = Array.from(document.getElementsByClassName("new-price"));
                     let oldPrices = Array.from(document.getElementsByClassName("price"));
                     let combinePrice = oldPrices.concat(newPrices);
                     let summa = 0;
-                    /*let summa = combinePrice.map(el => parseFloat(el.innerHTML) * parseInt(combinePrice.closest("OUTPUT").value));*/
+                    
                     for (let i of combinePrice) {
                         let amount = parseInt(i.parentNode.parentNode.getElementsByTagName("OUTPUT")[0].value);
                         summa += parseFloat(i.innerHTML) * amount;
                     }
                     document.getElementsByClassName("summa")[0].innerHTML = summa;
-                    
+
+
+                }
+                else {
+                    console.error('Error in update product');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+}
+
+function deleteProduct(productId) {
+    if (!isNaN(Number(productId))) {
+        fetch('/Basket/Delete', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ productId: productId })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    localStorage.removeItem(`product-${productId}-in-basket`);
+                    localStorage.removeItem(`product-${productId}-amount`);
+                    location.reload();
                 }
                 else {
                     console.error('Error in update product');
