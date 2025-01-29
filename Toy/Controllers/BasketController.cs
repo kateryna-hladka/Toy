@@ -30,6 +30,7 @@ namespace Toy.Controllers
                                               from product in pj.DefaultIfEmpty()
                                               join photo_product in _context.PhotoProducts on product.Id equals photo_product.ProductId into ppj
                                               from photo_product_result in ppj.DefaultIfEmpty()
+                                              where photo_product_result.Photo.IsMain == true
                                               let discount = _context.ProductDiscounts
                                               .Where(d => (product.Id == d.ProductId || product.CategoryId == d.CategoryId)
                                               && DateTime.Now <= d.Discount.DateTimeEnd).FirstOrDefault()
@@ -93,7 +94,7 @@ namespace Toy.Controllers
             if (ProductRequestIdIncorrect(productRequest))
                 return Json(new { success = false, message = "Invalid product ID" });
 
-            if(ProductRequestAmountIncorrect(productRequest))
+            if (ProductRequestAmountIncorrect(productRequest))
                 return Json(new { success = false, message = "Invalid product amount" });
 
             if (Request.Cookies["login"] != null)
@@ -110,7 +111,7 @@ namespace Toy.Controllers
                     });
                     _context.SaveChanges();
                 }
-                else 
+                else
                     return Json(new { success = false });
             }
             else
@@ -124,20 +125,60 @@ namespace Toy.Controllers
             }
             return Json(new { success = true });
         }
+        public IActionResult AddFromSession()
+        {
+            Console.Write("kdkd");
+            string userId = HttpContext.Session.GetString($"newUser");
+            List<string> sessionKeys = HttpContext.Session.Keys.Where(key => key.Contains($"product_{userId}") && !key.EndsWith("_amount")).ToList();
+            Dictionary<int, short> idAmount = new();
+            int splId;
+            foreach (string key in sessionKeys)
+            {
+                splId = Convert.ToInt32(key.Split("_")[2]);
+                if (!idAmount.ContainsKey(splId))
+                    idAmount.Add(splId, Convert.ToInt16(HttpContext.Session.GetInt32($"{key}_amount")));
+            }
+            DataBaseHelper data = new();
+            User? user = data.GetUserByFilter(u => u.Email == Request.Cookies["login"] || u.Phone == Request.Cookies["login"]);
+            if (user != null)
+            {
+                foreach (var key in idAmount)
+                {
+                    Basket? basket = _context.Baskets.Where(b => b.UserId == user.Id && b.ProductId == key.Key).FirstOrDefault();
+                    if (basket != null)
+                    {
+                        basket.Amount = Convert.ToInt16(key.Value);
+                        _context.SaveChanges();
+                        continue;
+                    }
+                    _context.Baskets.Add(new Basket()
+                    {
+                        ProductId = key.Key,
+                        UserId = user.Id,
+                        Amount = Convert.ToInt16(key.Value)
+                    });
+                    _context.SaveChanges();
+                }
+            }
+            else return NotFound();
+            return View("_Success");
+        }
         [HttpPost]
         public IActionResult Update([FromBody] ProductRequest productRequest)
         {
             if (ProductRequestIdIncorrect(productRequest))
                 return Json(new { success = false, message = "Invalid product ID" });
-            if(ProductRequestAmountIncorrect(productRequest))
+            if (ProductRequestAmountIncorrect(productRequest))
                 return Json(new { success = false, message = "Invalid product amount" });
             if (Request.Cookies["login"] != null)
             {
-                DataBaseHelper data = new ();
-                User? user = data.GetUserByFilter(u=> u.Email == Request.Cookies["login"] || u.Phone == Request.Cookies["login"]);
-                if (user != null) {
+                DataBaseHelper data = new();
+                User? user = data.GetUserByFilter(u => u.Email == Request.Cookies["login"] || u.Phone == Request.Cookies["login"]);
+                if (user != null)
+                {
                     Basket? basket = _context.Baskets.Where(b => b.UserId == user.Id && b.ProductId == productRequest.ProductId).FirstOrDefault();
-                    if (basket != null) {
+                    if (basket != null)
+                    {
                         basket.Amount = Convert.ToInt16(productRequest.Amount);
                         _context.SaveChanges();
                         return Json(new { success = true });
@@ -152,7 +193,7 @@ namespace Toy.Controllers
             {
                 string userId = HttpContext.Session.GetString($"newUser");
                 string sessionKey = HttpContext.Session.Keys.Where(key => key.Contains($"product_{userId}_{productRequest.ProductId}_amount")).FirstOrDefault();
-                if(sessionKey==null)
+                if (sessionKey == null)
                     return Json(new { success = false });
 
                 HttpContext.Session.SetInt32(sessionKey, Convert.ToInt32(productRequest.Amount));
@@ -194,7 +235,7 @@ namespace Toy.Controllers
                 HttpContext.Session.Remove(sessionKeyProduct);
                 HttpContext.Session.Remove(sessionKeyAmount);
             }
-                return Json(new { success = true });
+            return Json(new { success = true });
         }
         public class ProductRequest
         {

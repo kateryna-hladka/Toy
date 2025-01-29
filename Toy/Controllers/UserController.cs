@@ -52,6 +52,9 @@ namespace Toy.Controllers
                     if (Request.Cookies["login"] == null)
                         HttpContext.Response.Cookies.Append("login", user.Email ?? user.Phone);
 
+                    if (HttpContext.Session.GetString($"{HttpContext.Session.GetString("newUser")}_basket") != null)
+                       return RedirectToAction("AddFromSession", "Basket");
+
                     return View("_Success");
                 }
             }
