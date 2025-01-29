@@ -4,7 +4,6 @@
     int[] newProduct = NewProducts.GetProducts();
     IEnumerable<dynamic> ModelCollection = Model as IEnumerable<dynamic>;
 }
-@* @await Html.PartialAsync("_CardProduct", new[]{Model}); *@
 @if (ModelCollection.Any())
 {
     @await Html.PartialAsync("_BreadCrumb", new object[] { ModelCollection.First().product.Category.Name})
@@ -23,13 +22,8 @@
             else if (Array.Exists(newProduct, p => p == product.product.Id) && hasProduct)
             {
                 <div class="sign-new"></div>
-            } 
-            <span class="image-block">
-                <a asp-controller="Product" asp-action="Index" asp-route-id="@product.product.Id">
-                <img src="~/img/@(product.PhotoUrl ?? StaticVariables.defaultPicture)"
-                        class="card-img-top" alt="@product.product.Name">
-                </a>
-            </span>
+            }
+            @await Html.PartialAsync("_Photo_ProductIndex", new object[3] {product.product.Id, product.PhotoUrl, product.product.Name})
             <div class="card-body d-grid pb-0">
                 <div>
                     @await Html.PartialAsync("_Rating", new object[3] { product.MarkAvg, product.CommentCount, product.product.Id})

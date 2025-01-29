@@ -1,0 +1,13 @@
+﻿@using Toy.Utilit
+@model object[]
+@{
+    int productId = Convert.ToInt32(Model[0]);
+    string? photoUrl = Model[1]?.ToString();
+    string? productName = Model[1]?.ToString();
+}
+<span class="image-block">
+    <a asp-controller="Product" asp-action="Index" asp-route-id="@productId">
+        <img src="~/img/@(photoUrl ?? StaticVariables.defaultPicture)"
+                class="card-img-top" alt="@productName">
+    </a>
+</span>

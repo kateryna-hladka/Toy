@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Toy.Models;
+using Toy.Utilit.DataBase;
 
 namespace Toy.Controllers
 {
@@ -13,7 +14,7 @@ namespace Toy.Controllers
 
         public IActionResult Index(int id)
         {
-            Utilit.DataBaseHelper dataBaseHelper = new ();
+            DataBaseHelper dataBaseHelper = new ();
             var product = dataBaseHelper.GetProduct(null, id);
 
             return View(product);

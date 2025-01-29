@@ -478,6 +478,10 @@ button.send-to-basket {
     margin: auto;
 }
 
+.in-basket .new-price{
+    font-size: 1rem;
+}
+
 @media (max-width: 768px) {
     html {
         font-size: 12px;

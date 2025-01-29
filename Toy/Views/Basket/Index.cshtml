@@ -3,10 +3,9 @@
 @{
     int[] newProduct = NewProducts.GetProducts();
     IEnumerable<dynamic> ModelCollection = Model as IEnumerable<dynamic>;
-    int Summa = 0;
+    decimal Summa = 0;
     string unitPriceName = String.Empty;
 }
-@* @await Html.PartialAsync("_CardProduct", new[]{Model}); *@
 
 @await Html.PartialAsync("_BreadCrumb", new object[] { "Кошик" })
 @if (ModelCollection != null && ModelCollection.Count() != 0)
@@ -21,12 +20,7 @@
             {
                 <div class="basket-parent d-flex flex-row align-items-center" data-product-id="@product.product.Id">
                     <div>
-                        <span class="image-block">
-                            <a asp-controller="Product" asp-action="Index" asp-route-id="@product.product.Id">
-                                <img src="~/img/@(product.PhotoUrl ?? StaticVariables.defaultPicture)"
-                                     class="card-img-top" alt="@product.product.Name">
-                            </a>
-                        </span>
+                        @await Html.PartialAsync("_Photo_ProductIndex", new object[3] { product.product.Id, product.PhotoUrl, product.product.Name })
                     </div>
                     <div>
                         <div>@product.product.Name</div>

@@ -146,8 +146,6 @@ function sendProductToBasket(productId, element, amount = null) {
                     elemMarkAddBasketClass(element);
                     localStorage.setItem(`product-${productId}-in-basket`, `${productId}`);
                     localStorage.setItem(`product-${productId}-amount`, `${amount ?? 1}`);
-                } else {
-                    console.error('Failed to add product to basket');
                 }
             })
             .catch(error => {
@@ -191,18 +189,18 @@ function updateProductCount(productId, element, amount) {
                     let newPrices = Array.from(document.getElementsByClassName("new-price"));
                     let oldPrices = Array.from(document.getElementsByClassName("price"));
                     let combinePrice = oldPrices.concat(newPrices);
-                    let summa = 0;
+                    let summa = 0.0;
                     
                     for (let i of combinePrice) {
-                        let amount = parseInt(i.parentNode.parentNode.getElementsByTagName("OUTPUT")[0].value);
-                        summa += parseFloat(i.innerHTML) * amount;
+                        let amount = parseFloat(i.parentNode.parentNode.getElementsByTagName("OUTPUT")[0].value);
+                        let price = i.innerHTML.split(' грн')[0].replace(',', '.');
+                        /*let z = parseFloat(price[0], ',');
+                        let x = amount;
+                        b = summa + (price[0]);*/
+
+                        summa += parseFloat(price) * amount;
                     }
-                    document.getElementsByClassName("summa")[0].innerHTML = summa;
-
-
-                }
-                else {
-                    console.error('Error in update product');
+                    document.getElementsByClassName("summa")[0].innerHTML = summa.toString().replace('.', ',');
                 }
             })
             .catch(error => {
@@ -226,9 +224,6 @@ function deleteProduct(productId) {
                     localStorage.removeItem(`product-${productId}-in-basket`);
                     localStorage.removeItem(`product-${productId}-amount`);
                     location.reload();
-                }
-                else {
-                    console.error('Error in update product');
                 }
             })
             .catch(error => {

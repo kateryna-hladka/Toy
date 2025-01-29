@@ -3,8 +3,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using Toy.Models;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static Toy.Controllers.BasketController;
 
-namespace Toy.Utilit
+namespace Toy.Utilit.DataBase
 {
     public class DataBaseHelper
     {
@@ -22,8 +23,8 @@ namespace Toy.Utilit
                            .Where(d => (product.Id == d.ProductId || product.CategoryId == d.CategoryId) && DateTime.Now <= d.Discount.DateTimeEnd).FirstOrDefault()
                            let mark = _context.Reviews.Where(r => r.ProductId == product.Id).Average(r => r.Mark)
                            let comment = _context.Reviews.Where(r => r.ProductId == product.Id).Count()
-                           where (CategoryId != null && (product.CategoryId == CategoryId && (photo_product_result.Photo.IsMain == true || photo_product_result == null)))
-                           || (productId != null && product.Id == productId)
+                           where CategoryId != null && product.CategoryId == CategoryId && (photo_product_result.Photo.IsMain == true || photo_product_result == null)
+                           || productId != null && product.Id == productId
                            select new
                            {
                                product,
@@ -43,14 +44,13 @@ namespace Toy.Utilit
                                MarkAvg = mark as double?,
                                CommentCount = comment as int?
                            };
-            return (productId != null) ? products.FirstOrDefault() : products;
+            return productId != null ? products.FirstOrDefault() : products;
         }
 
         public User? GetUserByFilter(Func<User, bool> filter)
         => _context.User
                     .Where(filter)
-                    .Select(u => new User() { Id = u.Id, Name = u.Name, Surname = u.Surname, Email = u.Email, Phone = u.Phone, Password = u.Password } )
+                    .Select(u => new User() { Id = u.Id, Name = u.Name, Surname = u.Surname, Email = u.Email, Phone = u.Phone, Password = u.Password })
                     .FirstOrDefault();
-
     }
 }

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Security.Cryptography;
 using Toy.Models;
+using Toy.Utilit.DataBase;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Toy.Controllers
@@ -18,7 +19,7 @@ namespace Toy.Controllers
         }
         public IActionResult Index(int id)
         {
-            Utilit.DataBaseHelper dataBaseHelper = new();
+            DataBaseHelper dataBaseHelper = new();
             IEnumerable<dynamic> productsDate = dataBaseHelper.GetProduct(id, null);
             return View(productsDate);
         }
