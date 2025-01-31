@@ -1,0 +1,11 @@
+﻿<div class="d-flex">
+    <div class="category pe-3">
+        @if (Model != null)
+        {
+            @foreach (var category in (Model as List<Category>))
+            {
+                <div><a asp-controller="Category" asp-action="Index" asp-route-id="@category.Id">@category.Name</a></div>
+            }
+        }
+    </div>
+</div>

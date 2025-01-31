@@ -24,11 +24,9 @@ namespace Toy.Controllers
                     .OrderBy(c => c.Name)
                     .Select(c => c)];
 
-                Dictionary<string, object> result = new();
-                result.Add("Category", categories);
-
-                return View(result);
+                ViewData["Category"] = categories;
             
+            return View();
         }
 
         public IActionResult Privacy()

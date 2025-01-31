@@ -16,6 +16,12 @@ html {
     font-size: 14px;
 }
 
+
+header > div:first-child {
+    grid-template-columns: auto auto;
+    padding: 5px 2px;
+}
+
 @media (min-width: 768px ) {
     html {
         font-size: 16px;
@@ -30,8 +36,8 @@ html {
         border-right: 1px solid var(--black-light-opacity);
     }
 
-    .in-basket > .basket-parent {
-        max-width: 35%;
+    header > div:first-child {
+        grid-template-columns: 1.5fr auto;
     }
 }
 
@@ -40,6 +46,27 @@ html {
         float: right;
         width: 75%;
     }
+
+    .in-basket > .basket-parent {
+        max-width: 35%;
+    }
+    header > div:first-child {
+        grid-template-columns: 1.5fr 1fr;
+    }
+
+    header > div:first-child ul > li:first-child {
+        flex: auto;
+    }
+}
+
+
+header span.logo {
+    display: inline-block;
+    background-image: url(../img/header/logo.png);
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 50px;
+    background-size: contain;
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
@@ -67,6 +94,10 @@ header {
     z-index: 10;
 }
 
+header > div:first-child {
+    display: grid;
+}
+
 .add-basket button, header form button {
     border: none;
 }
@@ -76,10 +107,6 @@ header form button {
     border-radius: 0 10px 10px 0;
     background-color: var(--dark-violet);
     color: var(--white);
-}
-
-header ul li:first-child {
-    flex-basis: 450px;
 }
 
 header img, footer img {
@@ -104,25 +131,30 @@ a {
     text-decoration: none;
 }
 
-a:not([class=register-link], [class=index-link]) {
+a:not([class=register-link], [class=index-link]),
+a[href^="mailto:"] > span, a[href^="tel:"] > span,
+a[href*="google.com"] > span {
     color: black;
 }
 
 .brand {
     width: 5%;
     height: 5%;
-    background: no-repeat;
     background-image: url("/img/babyborn.png");
+}
+
+.brand, .phone_me, .arrow-left, .arrow-right,
+.sign-discount, .sign-new, .card .basket, .rubbish-bin {
+    background-repeat: no-repeat;
 }
 
 .phone_me {
     width: 55px;
     height: 55px;
     background-position: center;
-    background-repeat: no-repeat;
     background-size: contain;
     position: fixed;
-    top: 45%;
+    top: 65%;
     right: 0;
     background-image: url("/img/sign/phone me.png");
     z-index: 1;
@@ -164,7 +196,6 @@ a:not([class=register-link], [class=index-link]) {
     width: 25px;
     height: 25px;
     position: center;
-    background-repeat: no-repeat;
     background-size: contain;
     position: absolute;
     top: calc(50% - 25px/2);
@@ -193,7 +224,7 @@ span.product-not-available {
     font-weight: bold;
 }
 
-.image-block, .product-img, .parent-basket-free {
+.image-block, .product-img, .parent-basket-free, header span.logo {
     overflow: hidden;
 }
 
@@ -203,11 +234,11 @@ span.product-not-available {
     margin: auto;
 }
 
-    .image-block img, .product-img img, .basket-free {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
+.image-block img, .product-img img, .basket-free {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
 
 .card-body > div:first-of-type > div:last-of-type {
     float: right
@@ -244,7 +275,6 @@ span > .star-svg:not(:first-child) {
     height: 40px;
     position: absolute;
     z-index: 1;
-    background-repeat: no-repeat;
     background-size: contain;
 }
 
@@ -281,7 +311,6 @@ button:not(:disabled).send-to-basket {
 .card .basket, .rubbish-bin {
     display: inline-block;
     right: 10px;
-    background-repeat: no-repeat;
     background-size: contain;
 }
 
@@ -303,6 +332,22 @@ button:not(:disabled).send-to-basket {
 .choose-amount {
     padding: 5px;
     border-radius: 10%;
+}
+
+.choose-amount output {
+    display: inline-block;
+    min-width: 2ch;
+    max-width: 3ch;
+    text-align: center;
+}
+
+.choose-amount > span:nth-child(2) {
+    vertical-align: text-bottom;
+    padding: 0;
+}
+
+.choose-amount .add-product, .choose-amount .delete-product {
+    padding: 2px 10px;
 }
 
 .add-basket button, .user-form button {
@@ -429,7 +474,9 @@ div.error {
 }
 
 a:hover, .form-signin > div > a.register-link,
-.form-signup > div > a.index-link {
+.form-signup > div > a.index-link,
+a[href^="mailto:"] > span:hover, a[href^="tel:"] > span:hover,
+a[href*="google.com"] > span:hover {
     color: var(--blue);
 }
 
@@ -451,8 +498,9 @@ button.send-to-basket {
 }
 
 .basket-parent {
-    max-width: 60%;
+    max-width: 90%;
     border-bottom: 1px solid var(--black-light-opacity);
+    grid-template-columns: auto 1fr;
 }
 
 .basket-parent > div:first-of-type {
@@ -468,8 +516,8 @@ button.send-to-basket {
     border-radius: 5px;
 }
 
-.basket-parent > div:first-child{
-    margin:10px 10px 0px;
+.basket-parent > div:first-child {
+    margin: 10px 10px 0px;
 }
 
 .parent-basket-free {
@@ -478,23 +526,27 @@ button.send-to-basket {
     margin: auto;
 }
 
-.in-basket .new-price{
+.in-basket .new-price {
     font-size: 1rem;
 }
 
 @media (max-width: 768px) {
-    html {
-        font-size: 12px;
-    }
 
     header img:not([alt="Dash"]) {
-        width: 80%;
-        height: 80%;
+        width: 95%;
+        height: 95%;
     }
 
-    header img[alt="Logo"] {
-        width: 60%;
-        height: 60%;
+    header img[alt="Basket icon"], header img[alt="User icon"], header span.logo {
+        width: 25px;
+    }
+
+    header span.logo {
+        background: url('../img/header/bear white.png');
+        background-repeat: no-repeat;
+        height: 25px;
+        background-size: contain;
+        vertical-align: middle;
     }
 
     header button {
@@ -503,19 +555,18 @@ button.send-to-basket {
 
     header ul li:first-child {
         flex-basis: 250px;
+        line-height: 0;
     }
 
     .category {
+        font-size: 1.2rem;
         display: none;
     }
 
-    .card-product > .card {
-        width: 14rem;
-    }
-
     .product-img {
-        height: 20rem;
-        width: 16rem;
+        height: auto;
+        width: 45%;
+        padding: 2px;
     }
 
     .product-characteristic {
@@ -525,14 +576,41 @@ button.send-to-basket {
     .product-characteristic td:last-child {
         padding-left: 10%;
     }
+
+    .product-img + div {
+        width: auto;
+    }
 }
 
 @media (max-width: 576px) {
     html {
-        font-size: 10px;
+        font-size: 15px;
+    }
+
+    header {
+        line-height: 3;
+        height: 4rem;
+        padding: 5px 2px;
     }
 
     .card-product > .card {
-        width: 10rem;
+        width: 48%;
+    }
+
+    footer > div:last-child > ul {
+        padding: 5px 0;
+    }
+
+    .choose-amount {
+        padding: 2px;
+    }
+
+    .choose-amount .add-product, .choose-amount .delete-product {
+        font-size: x-large;
+        font-weight: 250;
+    }
+
+    .product-parent {
+        flex-direction: column;
     }
 }

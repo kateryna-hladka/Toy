@@ -18,13 +18,13 @@
             bool hasProduct = product.product.Amount > 0;
             if (hasProduct)
             {
-                <div class="basket-parent d-flex flex-row align-items-center" data-product-id="@product.product.Id">
+                <div class="basket-parent d-grid" data-product-id="@product.product.Id">
                     <div>
                         @await Html.PartialAsync("_Photo_ProductIndex", new object[3] { product.product.Id, product.PhotoUrl, product.product.Name })
                     </div>
                     <div>
                         <div>@product.product.Name</div>
-                        <div>
+                        <div class="mt-1 mb-1">
                             <span class="@(hasDiscount && hasProduct ? "decoration" : "price")">@product.product.Price.ToString("0.##") @product.UnitPriceName</span>
                             @await Html.PartialAsync("_Price", new object[6] { hasDiscount, hasProduct, product.product.Price, product.UnitPriceName, product.Discount, product.UnitDiscountName })
                         </div>
@@ -43,7 +43,7 @@
     <div class="mt-3 mb-2">Сума до сплати: <span class="ms-4 summa">@Summa.ToString("0.##")</span> @unitPriceName</div>
     @using (Html.BeginForm("Buy", "Product", HttpMethods.Get))
     {
-        <button type="submit">Оформити замовлення</button>
+        <button type="submit" class="mb-3">Оформити замовлення</button>
     }
 }
 else

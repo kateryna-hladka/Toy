@@ -200,6 +200,7 @@ function updateProductCount(productId, element, amount) {
 
                         summa += parseFloat(price) * amount;
                     }
+                    summa = parseFloat(summa.toFixed(2));
                     document.getElementsByClassName("summa")[0].innerHTML = summa.toString().replace('.', ',');
                 }
             })
