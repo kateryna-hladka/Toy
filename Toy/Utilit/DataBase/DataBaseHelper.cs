@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Linq.Expressions;
 using Toy.Models;
@@ -52,5 +53,22 @@ namespace Toy.Utilit.DataBase
                     .Where(filter)
                     .Select(u => new User() { Id = u.Id, Name = u.Name, Surname = u.Surname, Email = u.Email, Phone = u.Phone, Password = u.Password })
                     .FirstOrDefault();
+        public int[]? GetProductsId(HttpRequest httpRequest)
+        {
+            if (httpRequest.Cookies["login"] != null)
+                return [.. _context.Baskets.Where(b => b.User.Email == httpRequest.Cookies["login"] || b.User.Phone == httpRequest.Cookies["login"]).Select(b => b.ProductId)];
+            return null;
+        }
+        public bool IsProductInBasket(HttpRequest httpRequest, int productId)
+        {
+            int id = 0;
+            if (httpRequest.Cookies["login"] != null)
+                id = _context.Baskets.Where(b => (b.User.Email == httpRequest.Cookies["login"] || b.User.Phone == httpRequest.Cookies["login"]) &&
+                    b.ProductId == productId)
+                    .Select(p => p.ProductId)
+                    .FirstOrDefault();
+
+            return id != 0;
+        }
     }
 }

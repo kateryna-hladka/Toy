@@ -21,7 +21,12 @@ namespace Toy.Controllers
         {
             DataBaseHelper dataBaseHelper = new();
             IEnumerable<dynamic> productsDate = dataBaseHelper.GetProduct(id, null);
-            return View(productsDate);
+
+            Dictionary<string, object> result = new ();
+            result.Add("product", productsDate);
+            result.Add("basketsId", dataBaseHelper.GetProductsId(Request));
+
+            return View(result);
         }
     }
 }

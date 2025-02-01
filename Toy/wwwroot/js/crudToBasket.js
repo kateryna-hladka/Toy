@@ -4,12 +4,12 @@ let productExistInBasket = "Товар вже додано до кошика";
 
 addBasket?.addEventListener("click", function (event) {
     let elem = event.target;
-    let output = document.querySelector("output");
-    let outputValue = parseInt(output.value);
-
     let productId = getProductId(addBasket.getElementsByTagName("BUTTON")[0]);
 
-    if (localStorageIsNull(productId)) {
+    if (localStorageIsNull(productId) && !elemHasClass(elem)) {
+
+        let output = document.querySelector("output");
+        let outputValue = parseInt(output.value);
         changeProductAmount(elem, output, outputValue);
 
         if (elem.tagName === "BUTTON") {
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (target.closest(".basket")) {
             let basketElement = target.closest(".basket");
             let productId = getProductId(basketElement);
-            if (localStorageIsNull(productId))
+            if (localStorageIsNull(productId) && !elemHasClass(basketElement))
                 sendProductToBasket(productId, basketElement);
             else
                 alert(productExistInBasket);
@@ -86,6 +86,9 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+function elemHasClass(elem) {
+    return elem.classList.contains("send-to-basket");
+}
 function changeProductAmount(elem, output, outputValue) {
     if (elem.classList.contains("add-product")) {
         if (outputValue + 1 <= parseInt(output.getAttribute("maxValue")))
@@ -122,6 +125,7 @@ function elemMarkAddBasketClass(elem) {
 
 function displayChoosePanel() {
     let chooseAmount = addBasket.getElementsByClassName("choose-amount")[0];
+    if (chooseAmount !== undefined)
     chooseAmount.style.display = "none";
 }
 

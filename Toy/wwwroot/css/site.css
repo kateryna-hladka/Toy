@@ -247,6 +247,11 @@ span.product-not-available {
 div.price {
     margin-bottom: 0;
     width: 90%;
+    
+}
+
+div.price > span:not([class="decoration"]) {
+    white-space: nowrap;
 }
 
 span > .star-svg:not(:first-child) {

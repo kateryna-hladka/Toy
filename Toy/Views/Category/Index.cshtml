@@ -1,8 +1,9 @@
 ﻿@using Toy.Utilit
-@model dynamic
+@model Dictionary<string, object>
 @{
     int[] newProduct = NewProducts.GetProducts();
-    IEnumerable<dynamic> ModelCollection = Model as IEnumerable<dynamic>;
+    IEnumerable<dynamic> ModelCollection = Model["product"] as IEnumerable<dynamic>;
+    int[]? basketProductsId = Model.ContainsKey("basketsId") ? Model["basketsId"] as int[] : null;
 }
 @if (ModelCollection.Any())
 {
@@ -39,7 +40,7 @@
                     @await Html.PartialAsync("_Price", new object[6] { hasDiscount, hasProduct, product.product.Price, product.UnitPriceName, product.Discount, product.UnitDiscountName })
                     @if (hasProduct)
                     {
-                        <span class="basket" data-product-id="@product.product.Id"></span>
+                        <span class="basket @(basketProductsId!=null && Array.IndexOf(basketProductsId, Convert.ToInt32(product.product.Id)) >= 0 ? "send-to-basket" : "")" data-product-id="@product.product.Id"></span>
                     }
                 </div>
             </div>

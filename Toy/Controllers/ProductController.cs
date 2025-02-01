@@ -17,7 +17,11 @@ namespace Toy.Controllers
             DataBaseHelper dataBaseHelper = new ();
             var product = dataBaseHelper.GetProduct(null, id);
 
-            return View(product);
+            
+            Dictionary<string, object> result = new();
+            result.Add("product", product);
+            result.Add("basketsId", dataBaseHelper.IsProductInBasket(Request, id));
+            return View(result);
             
         }
         public IActionResult Buy()

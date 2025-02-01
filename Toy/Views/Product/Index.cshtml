@@ -1,20 +1,21 @@
 ﻿@using Toy.Utilit
 @model dynamic
 @{
-    bool isProduct = Model.product.Amount > 0;
-    bool hasDiscrount = Model.Discount != null;
+    bool isProduct = Model["product"].product.Amount > 0;
+    bool hasDiscrount = Model["product"].Discount != null;
+    Console.WriteLine(Model["basketsId"]);
 }
-@await Html.PartialAsync("_BreadCrumb", new object[] { Model.product.Name, Model.product.Category.Name, 
-    "Category", Model.product.CategoryId})
+@await Html.PartialAsync("_BreadCrumb", new object[] { Model["product"].product.Name, Model["product"].product.Category.Name,
+    "Category", Model["product"].product.CategoryId})
 <div class="w-100 product-parent d-flex">
     <div class="product-img me-md-5 me-2 me-sm-3">
-        <img src="~/img/@(Model.PhotoUrl ?? @StaticVariables.defaultPicture)"
-             class="card-img-top" alt="@Model.product.Name">
+        <img src="~/img/@(Model["product"].PhotoUrl ?? @StaticVariables.defaultPicture)"
+             class="card-img-top" alt="@Model["product"].product.Name">
     </div>
     <div>
-        <h2 class="product-name">@Model.product.Name</h2>
+        <h2 class="product-name">@Model["product"].product.Name</h2>
         <div class="d-flex">
-            @await Html.PartialAsync("_Rating", new object[3] {Model.MarkAvg, Model.CommentCount, Model.product.Id })
+            @await Html.PartialAsync("_Rating", new object[3] { Model["product"].MarkAvg, Model["product"].CommentCount, Model["product"].product.Id })
         </div>
 
         @if (isProduct)
@@ -28,13 +29,15 @@
         <div>
             @if (!isProduct || !hasDiscrount)
             {
-                <span>@Model.product.Price.ToString("0.##") @Model.UnitPriceName</span>
+                <span>@Model["product"].product.Price.ToString("0.##") @Model["product"].UnitPriceName</span>
             }
-            @await Html.PartialAsync("_Price", new object[6] { hasDiscrount, isProduct, Model.product.Price, Model.UnitPriceName, Model.Discount, Model.UnitDiscountName })
+            @await Html.PartialAsync("_Price", new object[6] { hasDiscrount, isProduct, Model["product"].product.Price, Model["product"].UnitPriceName, Model["product"].Discount, Model["product"].UnitDiscountName })
         </div>
         <div class="add-basket mt-2">
-            @await Html.PartialAsync("_ChooseProductAmount", new short []{Model.product.Amount})
-            <button class="ms-2 ms-sm-3" type="submit" data-product-id="@Model.product.Id">До кошика</button>
+            @if (!Model["basketsId"])
+                @await Html.PartialAsync("_ChooseProductAmount", new short[] { Model["product"].product.Amount })
+
+            <button class="ms-2 ms-sm-3 @(Model["basketsId"] ? "send-to-basket" : "")" type="submit" data-product-id="@Model["product"].product.Id">@(Model["basketsId"] ? "В кошику" : "До кошика")</button>
         </div>
         <div class="mt-2 mb-2">
             Основні характеристики:
@@ -42,69 +45,69 @@
                 <tr>
                     <td>Вік дитини</td>
                     <td>
-                        Від @Model.product.AgeFrom @(Model.product.AgeTo != null ? $" до {Model.product.AgeTo} {Transform.TextFormAge(Model.product.AgeTo)}" : Transform.TextFormAge(Model.product.AgeFrom))
+                        Від @Model["product"].product.AgeFrom @(Model["product"].product.AgeTo != null ? $" до {Model["product"].product.AgeTo} {Transform.TextFormAge(Model["product"].product.AgeTo)}" : Transform.TextFormAge(Model["product"].product.AgeFrom))
                     </td>
                 </tr>
-                @if (Model.product.Brand?.Name != null)
+                @if (Model["product"].product.Brand?.Name != null)
                 {
                     <tr>
                         <td>Виробник</td>
-                        <td>@Model.product.Brand.Name</td>
+                        <td>@Model["product"].product.Brand.Name</td>
                     </tr>
                 }
-                @if (Model.product.CountryProducer?.Name != null)
+                @if (Model["product"].product.CountryProducer?.Name != null)
                 {
                     <tr>
                         <td>Країна виробник</td>
-                        <td>@Model.product.CountryProducer.Name</td>
+                        <td>@Model["product"].product.CountryProducer.Name</td>
                     </tr>
                 }
-                @if (Model.product.Material?.Name != null)
+                @if (Model["product"].product.Material?.Name != null)
                 {
                     <tr>
                         <td>Матеріал</td>
-                        <td>@Model.product.Material.Name</td>
+                        <td>@Model["product"].product.Material.Name</td>
                     </tr>
                 }
-                @if (Model.product.Packaging?.Name != null)
+                @if (Model["product"].product.Packaging?.Name != null)
                 {
                     <tr>
                         <td>Пакування</td>
-                        <td>@Model.product.Packaging.Name</td>
+                        <td>@Model["product"].product.Packaging.Name</td>
                     </tr>
                 }
-                @if (Model.product.Sex != null)
+                @if (Model["product"].product.Sex != null)
                 {
                     <tr>
                         <td>Стать</td>
-                        <td>@Transform.TextFormSex(Model.product.Sex)</td>
+                        <td>@Transform.TextFormSex(Model["product"].product.Sex)</td>
                     </tr>
                 }
                 <tr>
                     <td>Тип товару</td>
-                    <td>@Model.product.Category.Name</td>
+                    <td>@Model["product"].product.Category.Name</td>
                 </tr>
-                @if (Model.UnitWeightName != null)
+                @if (Model["product"].UnitWeightName != null)
                 {
                     <tr>
                         <td>Вага іграшки</td>
-                        <td>@Model.product.Weight @Model.UnitWeightName</td>
+                        <td>@Model["product"].product.Weight @Model["product"].UnitWeightName</td>
                     </tr>
                 }
-                @if (Model.product.Size != null)
+                @if (Model["product"].product.Size != null)
                 {
                     <tr>
                         <td>Розмір іграшки</td>
-                        <td>@Model.product.Size @Model.UnitSizeName</td>
+                        <td>@Model["product"].product.Size @Model["product"].UnitSizeName</td>
                     </tr>
                 }
-                @if (Model.product.Packaging?.Length != null && Model.product.Packaging?.Width != null
-                && Model.product.Packaging?.Hight != null)
+                @if (Model["product"].product.Packaging?.Length != null && Model["product"].product.Packaging?.Width != null
+                && Model["product"].product.Packaging?.Hight != null)
                 {
                     <tr>
                         <td>Розмір пакування</td>
                         <td>
-                            @Model.product.Packaging.Length.ToString("0.#")-@Model.product.Packaging.Width.ToString("0.#")-@Model.product.Packaging.Hight.ToString("0.#")@Model.UnitSizeName
+                            @Model["product"].product.Packaging.Length.ToString("0.#")-@Model["product"].product.Packaging.Width.ToString("0.#")-@Model["product"].product.Packaging.Hight.ToString("0.#")@Model["product"].UnitSizeName
                         </td>
                     </tr>
                 }
@@ -114,10 +117,10 @@
 </div>
 
 <div>
-    @if (Model.product.Description != null)
+    @if (Model["product"].product.Description != null)
     {
         <span>Опис:</span>
-        <div class="product-description mb-2">@Model.product.Description</div>
+        <div class="product-description mb-2">@Model["product"].product.Description</div>
     }
 </div>
 
