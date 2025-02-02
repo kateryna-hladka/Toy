@@ -37,21 +37,19 @@ namespace Toy.Controllers
             LiqPay liqPay = new();
             Product[] products = GetProducts();
             decimal summa = 0;
-            decimal getSumma = 0;
 
             Dictionary<string, string> result = null;
 
             if (Request.Cookies["login"] != null)
             {
                 string login = Request.Cookies["login"];
-                var baskets = GetBusketWithDiscount(login);
+                var baskets = GetBasketWithDiscount(login);
 
                 foreach (var basket in baskets)
                 {
-                    getSumma = SubtractProductAmountAndGetPrice(basket, basket.Price, basket.basket.Amount, products, basket.basket.ProductId);
-                    if (getSumma < 0)
+                    summa += GetOrderPrice(basket, basket.Price, basket.basket.Amount);
+                    if (!SubtractAmount(products, basket.basket.ProductId, basket.basket.Amount))
                         return RedirectToAction("Index", "Basket");
-                    summa += getSumma;
                 }
 
                 _context.SaveChanges();
@@ -63,10 +61,9 @@ namespace Toy.Controllers
 
                 foreach (var basket in baskets)
                 {
-                    getSumma = SubtractProductAmountAndGetPrice(basket, basket.product.Price, basket.Amount, products, basket.product.Id);
-                    if (getSumma < 0)
+                    summa += GetOrderPrice(basket, basket.product.Price, basket.Amount);
+                    if (!SubtractAmount(products, basket.product.Id, basket.Amount))
                         return RedirectToAction("Index", "Basket");
-                    summa += getSumma;
                 }
 
                 _context.SaveChanges();
@@ -106,7 +103,7 @@ namespace Toy.Controllers
                     decimal price;
                     IEnumerable<dynamic> products = [..from product in _context.Products
                                                     let discount = _context.ProductDiscounts
-                                                    .Where(d => (product.Id == d.ProductId || product.CategoryId == d.CategoryId) 
+                                                    .Where(d => (product.Id == d.ProductId || product.CategoryId == d.CategoryId)
                                                     && DateTime.Now <= d.Discount.DateTimeEnd).FirstOrDefault()
                                                     select new
                                                     {
@@ -154,12 +151,12 @@ namespace Toy.Controllers
             else
             {
                 string login = Request.Query["login"].FirstOrDefault().ToString();
-                
+
                 if (Request.Query["cookie"] == "True")
-                    AddProductAmount(GetBusketWithDiscount(login));
+                    AddProductAmount(GetBasketWithDiscount(login));
                 else
                     AddProductAmount(GetBasketFromSession());
-                
+
                 return View("_Info", "Оплата не здійснена");
             }
         }
@@ -181,7 +178,7 @@ namespace Toy.Controllers
             return [.. from product in _context.Products select product];
         }
 
-        private dynamic GetBusketWithDiscount(string login)
+        private dynamic GetBasketWithDiscount(string login)
         {
             return from basket in _context.Baskets
                    where basket.User.Email == login || basket.User.Phone == login
@@ -196,13 +193,17 @@ namespace Toy.Controllers
                    };
         }
 
-        private decimal SubtractProductAmountAndGetPrice(dynamic baskets, decimal price, short amount, Product[] products, int findIndexId)
+        private decimal GetOrderPrice(dynamic baskets, decimal price, short amount)
         {
             decimal summa = 0;
-            int productId;
             summa += (baskets.Discount != null ?
                 Utilit.Discount.GetPriceWithDiscount(price, Convert.ToDecimal(baskets.Discount), baskets.UnitDiscountName)
                 : price) * amount;
+            return summa;
+        }
+        private bool SubtractAmount(Product[] products, int findIndexId, short amount)
+        {
+            int productId;
             productId = Array.FindIndex(products, p => p.Id == findIndexId);
             if (products[productId].Amount >= amount)
                 products[productId].Amount -= amount;
@@ -213,16 +214,12 @@ namespace Toy.Controllers
                     string login = Request.Cookies["login"];
                     BasketDataBaseHelper data = new();
                     data.DeleteBasket(data.GetUserByFilter(u => u.Email == login || u.Phone == login).Id, products[productId].Id);
-                    return -1;
                 }
                 else
-                {
                     _sessionHelper.DeleteProduct(products[productId].Id);
-                    return -1;
-                }
+                return false;
             }
-
-            return summa;
+            return true;
         }
 
         private dynamic GetBasketFromSession()
