@@ -1,0 +1,11 @@
+﻿@model dynamic
+@{
+    bool hasSecond = (Model is string[] && Model[1] != null);
+}
+<div>@(hasSecond ? Model[0] : Model)</div>
+@if (hasSecond)
+{
+        <script>
+            localStorage.clear();
+        </script>
+}

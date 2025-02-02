@@ -58,9 +58,9 @@ namespace Toy.Controllers
                         });
 
                     if (HttpContext.Session.GetString($"{HttpContext.Session.GetString("newUser")}_basket") != null)
-                       return RedirectToAction("AddFromSession", "Basket");
+                        return RedirectToAction("AddFromSession", "Basket");
 
-                    return View("_Success", "Успішно");
+                    return View("_Info", $"Привіт, {user.Name}");
                 }
             }
             else
@@ -124,21 +124,32 @@ namespace Toy.Controllers
                 else
                 {
                     _context.User.Add(new User()
-                        {
-                            Name = userName,
-                            Surname = userSurname,
-                            Email = (email) ? contactInfo : null,
-                            Phone = (phone) ? contactInfo : null,
-                            Password = BCrypt.Net.BCrypt.HashPassword(password)
-                        });
+                    {
+                        Name = userName,
+                        Surname = userSurname,
+                        Email = (email) ? contactInfo : null,
+                        Phone = (phone) ? contactInfo : null,
+                        Password = BCrypt.Net.BCrypt.HashPassword(password)
+                    });
                     _context.SaveChanges();
-                    
-                    return View("_Success", "Успішно");
+
+                    return View("_Info", "Реєстрація пройшла успішно");
                 }
             }
             else
                 return View(userExist);
 
+        }
+
+        [Route("api/sign-out")]
+        public IActionResult SignOut()
+        {
+            if (Request.Cookies["login"] != null)
+            {
+                HttpContext.Response.Cookies.Delete("login");
+                return Json(new { success = true });
+            }
+            return NotFound();
         }
 
         [Route("api/check-login")]

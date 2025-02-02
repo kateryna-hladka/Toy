@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Toy.Models;
+using Toy.Utilit;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ToyContext>(options =>
@@ -14,6 +15,9 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<SessionHelper>();
 
 var app = builder.Build();
 

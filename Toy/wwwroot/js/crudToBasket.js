@@ -81,7 +81,6 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(function () {
         if (sessionStorage.getItem("clear") === null) {
             checkUserLoginStatus();
-            localStorage.clear();
         }
     });
 });

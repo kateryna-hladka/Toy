@@ -28,7 +28,6 @@ namespace Toy.Utilit
                 description = "Оплата товару",
                 order_id = orderId,
                 sandbox = 1,
-                /*result_url = "https://lamprey-tidy-blindly.ngrok-free.app/Product/OrderSuccess",*/
                 result_url = $"https://lamprey-tidy-blindly.ngrok-free.app/Product/Result?login={login}&cookie={cookie}"
             };
 

@@ -5,22 +5,31 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Toy.Models;
+using Toy.Utilit;
 using Toy.Utilit.DataBase;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using static Toy.Controllers.BasketController;
+using static Toy.Utilit.StaticVariables;
 
 namespace Toy.Controllers
 {
     public class BasketController : Controller
     {
         private readonly ToyContext _context;
-
-        public BasketController(ToyContext context)
+        private readonly SessionHelper _sessionHelper;
+        public BasketController(ToyContext context, SessionHelper sessionHelper)
         {
             _context = context;
+            _sessionHelper = sessionHelper;
         }
         public IActionResult Index()
         {
+            if (_del != null)
+            {
+                _del();
+                _del = null;
+            }
+
             if (Request.Cookies["login"] != null)
             {
 
@@ -51,9 +60,9 @@ namespace Toy.Controllers
                 return View(basket);
 
             }
-            if (HttpContext.Session.GetString($"{GetSessionUserId()}_basket") != null)
+            if (HttpContext.Session.GetString($"{_sessionHelper.GetSessionUserId()}_basket") != null)
             {
-                Dictionary<int, short> idAmount = ParseSessionProducts();
+                Dictionary<int, short> idAmount = _sessionHelper.ParseSessionProducts();
 
                 var basket = from product in _context.Products
                              where product.Amount > 0
@@ -111,7 +120,7 @@ namespace Toy.Controllers
         }
         public IActionResult AddFromSession()
         {
-            Dictionary<int, short> idAmount = ParseSessionProducts();
+            Dictionary<int, short> idAmount = _sessionHelper.ParseSessionProducts();
             BasketDataBaseHelper data = new();
             User? user = data.GetUserByFilter(u => u.Email == Request.Cookies["login"] || u.Phone == Request.Cookies["login"]);
             if (user != null)
@@ -125,7 +134,7 @@ namespace Toy.Controllers
                 }
             }
             else return NotFound();
-            return View("_Success");
+            return View("_Info", "Успішно");
         }
         [HttpPost]
         public IActionResult Update([FromBody] ProductRequest productRequest)
@@ -146,7 +155,7 @@ namespace Toy.Controllers
             }
             else
             {
-                string? sessionKey = GetSessionProductAmount(productRequest.ProductId);
+                string? sessionKey = _sessionHelper.GetSessionProductAmount(productRequest.ProductId);
                 if (sessionKey == null)
                     return NotFound();
 
@@ -170,14 +179,7 @@ namespace Toy.Controllers
             }
             else
             {
-                string? userId = GetSessionUserId();
-                string? sessionKeyProduct = HttpContext.Session.Keys.Where(key => key.Contains($"product_{userId}_{productRequest.ProductId}")).FirstOrDefault();
-                string? sessionKeyAmount = GetSessionProductAmount(productRequest.ProductId);
-                if (sessionKeyProduct == null || sessionKeyAmount == null)
-                    return NotFound();
-
-                HttpContext.Session.Remove(sessionKeyProduct);
-                HttpContext.Session.Remove(sessionKeyAmount);
+                _sessionHelper.DeleteProduct(productRequest.ProductId);
             }
             return Json(new { success = true });
         }
@@ -212,30 +214,5 @@ namespace Toy.Controllers
                 return true;
             return false;
         }
-        private Dictionary<int, short> ParseSessionProducts()
-        {
-            string userId = GetSessionUserId();
-            List<string> sessionKeys = HttpContext.Session.Keys.Where(key => key.Contains($"product_{userId}") && !key.EndsWith("_amount")).ToList();
-            Dictionary<int, short> idAmount = new();
-            int splId;
-
-            foreach (string key in sessionKeys)
-            {
-                splId = Convert.ToInt32(key.Split("_")[2]);
-                if (!idAmount.ContainsKey(splId))
-                    idAmount.Add(splId, Convert.ToInt16(HttpContext.Session.GetInt32($"{key}_amount")));
-            }
-            return idAmount;
-        }
-        private string? GetSessionUserId()
-        {
-            return HttpContext.Session.GetString($"newUser");
-        }
-        private string? GetSessionProductAmount(int productId)
-        {
-            return HttpContext.Session.Keys
-                .Where(key => key.Contains($"product_{GetSessionUserId()}_{productId}_amount")).FirstOrDefault();
-        }
-
     }
 }

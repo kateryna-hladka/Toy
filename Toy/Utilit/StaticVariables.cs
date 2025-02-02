@@ -14,5 +14,7 @@
         public static readonly int minPhoneEmainLength = 5;
         public static readonly string nameInfo = "Ім'я має бути від 2 літер, без зайвих символів";
         public static readonly string surnameInfo = "Прізвище має бути від 3 літер, без зайвих символів";
+        public delegate void RemoveCookie();
+        public static RemoveCookie _del;
     }
 }

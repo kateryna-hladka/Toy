@@ -27,3 +27,27 @@ function setRegExpCustomValidity(elem) {
     if (pattern.test(elem.value))
         elem.setCustomValidity('');
 }
+
+document.querySelector(".signOut")?.addEventListener('click', () => {
+    signOut();
+});
+
+function signOut() {
+    fetch('/api/sign-out', {
+        method: 'Get',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                localStorage.clear();
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    
+}
