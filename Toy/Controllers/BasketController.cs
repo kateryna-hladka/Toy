@@ -28,6 +28,7 @@ namespace Toy.Controllers
                                               where b.User.Email == Request.Cookies["login"] || b.User.Phone == Request.Cookies["login"]
                                               join products in _context.Products on b.ProductId equals products.Id into pj
                                               from product in pj.DefaultIfEmpty()
+                                              where product.Amount > 0
                                               join photo_product in _context.PhotoProducts on product.Id equals photo_product.ProductId into ppj
                                               from photo_product_result in ppj.DefaultIfEmpty()
                                               where photo_product_result.Photo.IsMain == true
@@ -55,6 +56,7 @@ namespace Toy.Controllers
                 Dictionary<int, short> idAmount = ParseSessionProducts();
 
                 var basket = from product in _context.Products
+                             where product.Amount > 0
                              join idakey in idAmount.Keys on product.Id equals idakey into idaj
                              from iDAmount in idaj
                              join photo_product in _context.PhotoProducts on product.Id equals photo_product.ProductId into ppj
@@ -171,7 +173,7 @@ namespace Toy.Controllers
                 string? userId = GetSessionUserId();
                 string? sessionKeyProduct = HttpContext.Session.Keys.Where(key => key.Contains($"product_{userId}_{productRequest.ProductId}")).FirstOrDefault();
                 string? sessionKeyAmount = GetSessionProductAmount(productRequest.ProductId);
-                if (sessionKeyProduct == null || sessionKeyAmount==null)
+                if (sessionKeyProduct == null || sessionKeyAmount == null)
                     return NotFound();
 
                 HttpContext.Session.Remove(sessionKeyProduct);
@@ -179,7 +181,6 @@ namespace Toy.Controllers
             }
             return Json(new { success = true });
         }
-
 
         public class ProductRequest
         {

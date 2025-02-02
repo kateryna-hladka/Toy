@@ -473,7 +473,7 @@ public partial class ToyContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.PurchaseHistoryId).HasColumnName("purchase_history_id");
-            entity.Property(e => e.PurchaceId).HasColumnName("purchase_id");
+            entity.Property(e => e.PurchaseId).HasColumnName("purchase_id");
             entity.HasOne(d => d.PurchaseHistory).WithMany(p => p.PurchaseHistoryProducts)
                 .HasForeignKey(d => d.PurchaseHistoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)

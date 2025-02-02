@@ -3,7 +3,6 @@
 @{
     bool isProduct = Model["product"].product.Amount > 0;
     bool hasDiscrount = Model["product"].Discount != null;
-    Console.WriteLine(Model["basketsId"]);
 }
 @await Html.PartialAsync("_BreadCrumb", new object[] { Model["product"].product.Name, Model["product"].product.Category.Name,
     "Category", Model["product"].product.CategoryId})

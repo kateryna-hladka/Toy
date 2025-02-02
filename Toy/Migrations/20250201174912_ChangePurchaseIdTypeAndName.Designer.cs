@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Toy.Models;
 
@@ -11,9 +12,11 @@ using Toy.Models;
 namespace Toy.Migrations
 {
     [DbContext(typeof(ToyContext))]
-    partial class ToyContextModelSnapshot : ModelSnapshot
+    [Migration("20250201174912_ChangePurchaseIdTypeAndName")]
+    partial class ChangePurchaseIdTypeAndName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

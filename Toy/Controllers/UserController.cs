@@ -51,12 +51,16 @@ namespace Toy.Controllers
                         return View(errors);
                     }
                     if (Request.Cookies["login"] == null)
-                        HttpContext.Response.Cookies.Append("login", user.Email ?? user.Phone);
+                        HttpContext.Response.Cookies.Append("login", user.Email ?? user.Phone, new CookieOptions
+                        {
+                            Expires = DateTimeOffset.Now.AddDays(30),
+                            HttpOnly = true
+                        });
 
                     if (HttpContext.Session.GetString($"{HttpContext.Session.GetString("newUser")}_basket") != null)
                        return RedirectToAction("AddFromSession", "Basket");
 
-                    return View("_Success");
+                    return View("_Success", "Успішно");
                 }
             }
             else
@@ -129,7 +133,7 @@ namespace Toy.Controllers
                         });
                     _context.SaveChanges();
                     
-                    return View("_Success");
+                    return View("_Success", "Успішно");
                 }
             }
             else
