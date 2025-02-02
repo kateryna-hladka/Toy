@@ -13,8 +13,7 @@ namespace Toy.Utilit
         }
         public Dictionary<int, short> ParseSessionProducts()
         {
-            string userId = GetSessionUserId();
-            List<string> sessionKeys = _httpContextAccessor.HttpContext.Session.Keys.Where(key => key.Contains($"product_{userId}") && !key.EndsWith("_amount")).ToList();
+            List<string> sessionKeys = GetProductsId();
             Dictionary<int, short> idAmount = new();
             int splId;
 
@@ -30,6 +29,13 @@ namespace Toy.Utilit
         {
             return _httpContextAccessor.HttpContext?.Session.GetString($"newUser");
         }
+
+        public List<string> GetProductsId()
+        {
+            string userId = GetSessionUserId();
+            return _httpContextAccessor.HttpContext.Session.Keys.Where(key => key.Contains($"product_{userId}") && !key.EndsWith("_amount")).ToList();
+        }
+
         public string? GetSessionProductAmount(int productId)
         {
             return _httpContextAccessor.HttpContext?.Session.Keys
@@ -37,22 +43,24 @@ namespace Toy.Utilit
         }
         public void DeleteAllProducts()
         {
-            string userId = GetSessionUserId();
-            List<string> productsId = _httpContextAccessor.HttpContext.Session.Keys.Where(key => key.Contains($"product_{userId}") && !key.EndsWith("_amount")).ToList();
-            List<string> amount = _httpContextAccessor.HttpContext.Session.Keys.Where(key => key.Contains($"product_{userId}") && key.EndsWith("_amount")).ToList();
+            List<string> productsId = GetProductsId();
+            List<string> amount = _httpContextAccessor.HttpContext.Session.Keys.Where(key => key.Contains($"product_{GetSessionUserId()}") && key.EndsWith("_amount")).ToList();
             foreach (var i in productsId)
-                _httpContextAccessor.HttpContext.Session.Remove(i);
+                RemoveSessionItem(i);
             foreach(var i in amount)
-                _httpContextAccessor.HttpContext.Session.Remove(i);
+                RemoveSessionItem(i);
         }
         public void DeleteProduct(int productId)
         {
-            string? userId = GetSessionUserId();
-            string? sessionKeyProduct = _httpContextAccessor.HttpContext.Session.Keys.Where(key => key.Contains($"product_{userId}_{productId}")).FirstOrDefault();
+            string? sessionKeyProduct = _httpContextAccessor.HttpContext.Session.Keys.Where(key => key.Contains($"product_{GetSessionUserId()}_{productId}")).FirstOrDefault();
             string? sessionKeyAmount = GetSessionProductAmount(productId);
 
-            _httpContextAccessor.HttpContext.Session.Remove(sessionKeyProduct);
-            _httpContextAccessor.HttpContext.Session.Remove(sessionKeyAmount);
+            RemoveSessionItem(sessionKeyProduct);
+            RemoveSessionItem(sessionKeyAmount);
+        }
+        public void RemoveSessionItem(string key)
+        {
+            _httpContextAccessor.HttpContext.Session.Remove(key);
         }
     }
 }

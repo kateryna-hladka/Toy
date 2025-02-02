@@ -535,6 +535,10 @@ button.send-to-basket {
     font-size: 1rem;
 }
 
+.liqpayBuy{
+    width: 10rem;
+}
+
 @media (max-width: 768px) {
 
     header img:not([alt="Dash"]) {

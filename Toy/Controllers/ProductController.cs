@@ -35,79 +35,40 @@ namespace Toy.Controllers
         public IActionResult Buy()
         {
             LiqPay liqPay = new();
-            Product[] products = [..from product in _context.Products
-                                select product];
+            Product[] products = GetProducts();
             decimal summa = 0;
+            decimal getSumma = 0;
+
             Dictionary<string, string> result = null;
 
             if (Request.Cookies["login"] != null)
             {
-                var baskets = from basket in _context.Baskets
-                              where basket.User.Email == Request.Cookies["login"] || basket.User.Phone == Request.Cookies["login"]
-                              let discount = _context.ProductDiscounts
-                              .Where(d => (basket.Product.Id == d.ProductId || basket.Product.CategoryId == d.CategoryId) && DateTime.Now <= d.Discount.DateTimeEnd).FirstOrDefault()
-                              select new
-                              {
-                                  basket,
-                                  basket.Product.Price,
-                                  Discount = discount.Discount.Value as decimal?,
-                                  UnitDiscountName = discount.Discount.Unit.Name,
-                              };
+                string login = Request.Cookies["login"];
+                var baskets = GetBusketWithDiscount(login);
 
-                int productId;
-                foreach (var b in baskets)
+                foreach (var basket in baskets)
                 {
-                    summa += (b.Discount != null ?
-                        Utilit.Discount.GetPriceWithDiscount(b.Price, Convert.ToDecimal(b.Discount), b.UnitDiscountName)
-                        : b.Price) * b.basket.Amount;
-                    productId = Array.FindIndex(products, p => p.Id == b.basket.ProductId);
-                    if (products[productId].Amount >= b.basket.Amount)
-                        products[productId].Amount -= b.basket.Amount;
-                    else
-                    {
-
-                        BasketDataBaseHelper data = new ();
-                        data.DeleteBasket(data.GetUserByFilter(u => u.Email == Request.Cookies["login"] || u.Phone == Request.Cookies["login"]).Id, products[productId].Id);
+                    getSumma = SubtractProductAmountAndGetPrice(basket, basket.Price, basket.basket.Amount, products, basket.basket.ProductId);
+                    if (getSumma < 0)
                         return RedirectToAction("Index", "Basket");
-                    }
+                    summa += getSumma;
                 }
 
                 _context.SaveChanges();
-                result = liqPay.CreatePayment(summa.ToString(), Request.Cookies["login"], true);
+                result = liqPay.CreatePayment(summa.ToString(), login, true);
             }
             else
             {
-                Dictionary<int, short> idAmount = _sessionHelper.ParseSessionProducts();
+                var baskets = GetBasketFromSession();
 
-                var baskets = from product in _context.Products
-                              join idakey in idAmount.Keys on product.Id equals idakey into idaj
-                              from iDAmount in idaj
-                              let discount = _context.ProductDiscounts
-                             .Where(d => (product.Id == d.ProductId || product.CategoryId == d.CategoryId) && DateTime.Now <= d.Discount.DateTimeEnd).FirstOrDefault()
-                              select new
-                              {
-                                  product,
-                                  MaxAmount = product.Amount,
-                                  Amount = idAmount[product.Id],
-                                  Discount = discount.Discount.Value as decimal?,
-                                  UnitDiscountName = discount.Discount.Unit.Name
-                              };
-
-                int productId;
-                foreach (var b in baskets)
+                foreach (var basket in baskets)
                 {
-                    summa += (b.Discount != null ?
-                        Utilit.Discount.GetPriceWithDiscount(b.product.Price, Convert.ToDecimal(b.Discount), b.UnitDiscountName)
-                        : b.product.Price) * b.Amount;
-                    productId = Array.FindIndex(products, p => p.Id == b.product.Id);
-                    if (products[productId].Amount >= b.Amount)
-                        products[productId].Amount -= b.Amount;
-                    else
-                    {
-                        _sessionHelper.DeleteProduct(products[productId].Id);
+                    getSumma = SubtractProductAmountAndGetPrice(basket, basket.product.Price, basket.Amount, products, basket.product.Id);
+                    if (getSumma < 0)
                         return RedirectToAction("Index", "Basket");
-                    }
+                    summa += getSumma;
                 }
+
                 _context.SaveChanges();
                 result = liqPay.CreatePayment(summa.ToString(), _sessionHelper.GetSessionUserId(), false);
             }
@@ -137,30 +98,30 @@ namespace Toy.Controllers
                 if (Request.Query["cookie"] == "True")
                 {
                     IEnumerable<dynamic> baskets = [..from basket in _context.Baskets
-                                           where basket.User.Email == login || basket.User.Phone == login
-                                           select basket];
+                                                      where basket.User.Email == login || basket.User.Phone == login
+                                                      select basket];
                     BasketDataBaseHelper basketData = new();
                     User? user = basketData.GetUserByFilter(u => u.Email == login || u.Phone == login);
 
-
                     decimal price;
-                    IEnumerable<dynamic> prod = [..from product in _context.Products
-                       let discount = _context.ProductDiscounts
-                       .Where(d => (product.Id == d.ProductId || product.CategoryId == d.CategoryId) && DateTime.Now <= d.Discount.DateTimeEnd).FirstOrDefault()
-                       select new
-                       {
-                           product,
-                           Discount = discount.Discount.Value as decimal?,
-                           UnitDiscountName = discount.Discount.Unit.Name
-                       }];
+                    IEnumerable<dynamic> products = [..from product in _context.Products
+                                                    let discount = _context.ProductDiscounts
+                                                    .Where(d => (product.Id == d.ProductId || product.CategoryId == d.CategoryId) 
+                                                    && DateTime.Now <= d.Discount.DateTimeEnd).FirstOrDefault()
+                                                    select new
+                                                    {
+                                                        product,
+                                                        Discount = discount.Discount.Value as decimal?,
+                                                        UnitDiscountName = discount.Discount.Unit.Name
+                                                    }];
 
                     if (user != null)
                     {
                         foreach (var basket in baskets)
                         {
-                            var z = prod.FirstOrDefault(p => p.product.Id == basket.ProductId);
-                            if (z.Discount != null)
-                                price = GetPriceWithDiscount(basket.Product.Price, Convert.ToDecimal(z.Discount), z.UnitDiscountName);
+                            var product = products.FirstOrDefault(p => p.product.Id == basket.ProductId);
+                            if (product.Discount != null)
+                                price = GetPriceWithDiscount(basket.Product.Price, Convert.ToDecimal(product.Discount), product.UnitDiscountName);
                             else
                                 price = basket.Product.Price;
 
@@ -193,56 +154,12 @@ namespace Toy.Controllers
             else
             {
                 string login = Request.Query["login"].FirstOrDefault().ToString();
-                Product[] products = [..from product in _context.Products
-                                select product];
+                
                 if (Request.Query["cookie"] == "True")
-                {
-                    var baskets = from basket in _context.Baskets
-                                  where basket.User.Email == login || basket.User.Phone == login
-                                  let discount = _context.ProductDiscounts
-                                  .Where(d => (basket.Product.Id == d.ProductId || basket.Product.CategoryId == d.CategoryId) && DateTime.Now <= d.Discount.DateTimeEnd).FirstOrDefault()
-                                  select new
-                                  {
-                                      basket,
-                                      basket.Product.Price,
-                                      Discount = discount.Discount.Value as decimal?,
-                                      UnitDiscountName = discount.Discount.Unit.Name,
-                                  };
-                    int productId;
-                    foreach (var b in baskets)
-                    {
-                        productId = Array.FindIndex(products, p => p.Id == b.basket.ProductId);
-                            products[productId].Amount += b.basket.Amount;
-                    }
-                    _context.SaveChanges();
-                    
-                }
+                    AddProductAmount(GetBusketWithDiscount(login));
                 else
-                {
-                    Dictionary<int, short> idAmount = _sessionHelper.ParseSessionProducts();
-
-                    var baskets = from product in _context.Products
-                                  join idakey in idAmount.Keys on product.Id equals idakey into idaj
-                                  from iDAmount in idaj
-                                  let discount = _context.ProductDiscounts
-                                 .Where(d => (product.Id == d.ProductId || product.CategoryId == d.CategoryId) && DateTime.Now <= d.Discount.DateTimeEnd).FirstOrDefault()
-                                  select new
-                                  {
-                                      product,
-                                      MaxAmount = product.Amount,
-                                      Amount = idAmount[product.Id],
-                                      Discount = discount.Discount.Value as decimal?,
-                                      UnitDiscountName = discount.Discount.Unit.Name
-                                  };
-
-                    int productId;
-                    foreach (var b in baskets)
-                    {
-                        productId = Array.FindIndex(products, p => p.Id == b.product.Id);
-                        products[productId].Amount += b.Amount;
-                    }
-                    _context.SaveChanges();
-                }
+                    AddProductAmount(GetBasketFromSession());
+                
                 return View("_Info", "Оплата не здійснена");
             }
         }
@@ -257,6 +174,86 @@ namespace Toy.Controllers
                     .Where(p => p.PurchaseId == orderId).Select(p => p.PurchaseId).FirstOrDefault();
             } while (orderQunique != null);
             return orderId;
+        }
+
+        private Product[] GetProducts()
+        {
+            return [.. from product in _context.Products select product];
+        }
+
+        private dynamic GetBusketWithDiscount(string login)
+        {
+            return from basket in _context.Baskets
+                   where basket.User.Email == login || basket.User.Phone == login
+                   let discount = _context.ProductDiscounts
+                   .Where(d => (basket.Product.Id == d.ProductId || basket.Product.CategoryId == d.CategoryId) && DateTime.Now <= d.Discount.DateTimeEnd).FirstOrDefault()
+                   select new
+                   {
+                       basket,
+                       basket.Product.Price,
+                       Discount = discount.Discount.Value as decimal?,
+                       UnitDiscountName = discount.Discount.Unit.Name,
+                   };
+        }
+
+        private decimal SubtractProductAmountAndGetPrice(dynamic baskets, decimal price, short amount, Product[] products, int findIndexId)
+        {
+            decimal summa = 0;
+            int productId;
+            summa += (baskets.Discount != null ?
+                Utilit.Discount.GetPriceWithDiscount(price, Convert.ToDecimal(baskets.Discount), baskets.UnitDiscountName)
+                : price) * amount;
+            productId = Array.FindIndex(products, p => p.Id == findIndexId);
+            if (products[productId].Amount >= amount)
+                products[productId].Amount -= amount;
+            else
+            {
+                if (Request.Cookies["login"] != null)
+                {
+                    string login = Request.Cookies["login"];
+                    BasketDataBaseHelper data = new();
+                    data.DeleteBasket(data.GetUserByFilter(u => u.Email == login || u.Phone == login).Id, products[productId].Id);
+                    return -1;
+                }
+                else
+                {
+                    _sessionHelper.DeleteProduct(products[productId].Id);
+                    return -1;
+                }
+            }
+
+            return summa;
+        }
+
+        private dynamic GetBasketFromSession()
+        {
+            Dictionary<int, short> idAmount = _sessionHelper.ParseSessionProducts();
+
+            return from product in _context.Products
+                   join idakey in idAmount.Keys on product.Id equals idakey into idaj
+                   from iDAmount in idaj
+                   let discount = _context.ProductDiscounts
+                  .Where(d => (product.Id == d.ProductId || product.CategoryId == d.CategoryId) && DateTime.Now <= d.Discount.DateTimeEnd).FirstOrDefault()
+                   select new
+                   {
+                       product,
+                       MaxAmount = product.Amount,
+                       Amount = idAmount[product.Id],
+                       Discount = discount.Discount.Value as decimal?,
+                       UnitDiscountName = discount.Discount.Unit.Name
+                   };
+        }
+
+        private void AddProductAmount(dynamic baskets)
+        {
+            Product[] products = GetProducts();
+            int productId;
+            foreach (var b in baskets)
+            {
+                productId = Array.FindIndex(products, p => p.Id == b.product.Id);
+                products[productId].Amount += b.Amount;
+            }
+            _context.SaveChanges();
         }
     }
 }

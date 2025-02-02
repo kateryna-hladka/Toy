@@ -3,6 +3,6 @@
 <form method="POST" action="https://www.liqpay.ua/api/3/checkout" accept-charset="utf-8">
     <input type="hidden" name="data" value="@Model["encodedData"]" />
     <input type="hidden" name="signature" value="@Model["signature"]" />
-    <input type="image" src="//static.liqpay.ua/buttons/payUk.png" />
+    <input class="liqpayBuy" type="image" src="//static.liqpay.ua/buttons/payUk.png" />
 </form>
 
